@@ -21,6 +21,15 @@ backend/*.log
 backend/logs/
 backend/.env
 
+# Database files (H2)
+backend/data/
+backend/*.mv.db
+backend/*.trace.db
+backend/*.lock.db
+*.mv.db
+*.trace.db
+*.lock.db
+
 # Frontend (Node/React)
 frontend/node_modules/
 frontend/dist/
