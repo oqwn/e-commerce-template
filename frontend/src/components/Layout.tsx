@@ -1,46 +1,23 @@
-import { ReactNode, useEffect } from 'react'
+import { ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   HomeIcon, 
-  ChartBarIcon, 
-  BookOpenIcon, 
-  ClipboardDocumentListIcon, 
-  BriefcaseIcon,
-  UserIcon,
-  Cog6ToothIcon,
-  ChartPieIcon,
-  TrophyIcon
+  ShoppingBagIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline'
-import wsService from '@/services/websocket'
 
 interface LayoutProps {
   children: ReactNode
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Trading', href: '/trading', icon: ChartBarIcon },
-  { name: 'Order Book', href: '/orderbook', icon: BookOpenIcon },
-  { name: 'Orders', href: '/orders', icon: ClipboardDocumentListIcon },
-  { name: 'Positions', href: '/positions', icon: BriefcaseIcon },
-  { name: 'Charts', href: '/charts', icon: ChartPieIcon },
-  { name: 'Leaderboard', href: '/leaderboard', icon: TrophyIcon },
-  { name: 'Account', href: '/account', icon: UserIcon },
+  { name: 'Home', href: '/home', icon: HomeIcon },
+  { name: 'Products', href: '/products', icon: ShoppingBagIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
 ]
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
-
-  useEffect(() => {
-    // Connect to WebSocket when app loads
-    wsService.connect()
-
-    // Cleanup on unmount
-    return () => {
-      wsService.disconnect()
-    }
-  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -49,7 +26,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center justify-center border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-xl font-bold text-primary-600">Fast Trade Engine</h1>
+            <h1 className="text-xl font-bold text-primary-600">E-Commerce Store</h1>
           </div>
 
           {/* Navigation */}
@@ -86,9 +63,9 @@ export default function Layout({ children }: LayoutProps) {
           {/* Footer */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center">
-              <div className="h-2 w-2 rounded-full bg-success-500 animate-pulse"></div>
+              <div className="h-2 w-2 rounded-full bg-success-500"></div>
               <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                Connected
+                Ready
               </span>
             </div>
           </div>

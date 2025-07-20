@@ -14,19 +14,13 @@ export default defineConfig({
       '@services': path.resolve(__dirname, './src/services'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@types': path.resolve(__dirname, './src/types'),
-      '@stores': path.resolve(__dirname, './src/stores'),
     },
   },
   server: {
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:20010',
-        changeOrigin: true,
-      },
-      '/ws': {
-        target: 'ws://localhost:20010',
-        ws: true,
+        target: 'http://localhost:8080',
         changeOrigin: true,
       },
     },
@@ -38,8 +32,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'chart-vendor': ['chart.js', 'react-chartjs-2'],
-          'utils-vendor': ['axios', 'date-fns', '@stomp/stompjs'],
+          'utils-vendor': ['axios', 'date-fns'],
         },
       },
     },

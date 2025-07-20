@@ -1,7 +1,7 @@
 {
-  "name": "fast-trade-engine-frontend",
+  "name": "ecommerce-frontend",
   "version": "1.0.0",
-  "description": "Frontend for Fast Trade Engine - High-performance electronic trading system",
+  "description": "Frontend for E-Commerce Platform - React-based user interface",
   "private": true,
   "packageManager": "pnpm@8.14.0",
   "engines": {
@@ -21,19 +21,14 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
-    "@stomp/stompjs": "^7.1.1",
     "@tanstack/react-query": "^5.17.0",
-    "@tanstack/react-table": "^8.11.2",
     "axios": "^1.6.5",
-    "chart.js": "^4.4.1",
     "date-fns": "^3.2.0",
     "react": "^18.2.0",
-    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
     "react-hot-toast": "^2.4.1",
-    "react-router-dom": "^6.21.1",
-    "zustand": "^4.4.7"
+    "react-router-dom": "^6.21.1"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",

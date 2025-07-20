@@ -5,13 +5,13 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.fasttrader</groupId>
-    <artifactId>fast-trade-engine</artifactId>
+    <groupId>com.ecommerce</groupId>
+    <artifactId>ecommerce-backend</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Fast Trade Engine</name>
-    <description>High-performance electronic trading system</description>
+    <name>E-Commerce Backend</name>
+    <description>Spring Boot backend for e-commerce platform</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,12 +26,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <disruptor.version>3.4.4</disruptor.version>
-        <caffeine.version>3.1.8</caffeine.version>
         <micrometer.version>1.12.0</micrometer.version>
         <junit.version>5.10.1</junit.version>
         <mockito.version>5.7.0</mockito.version>
-        <jmh.version>1.37</jmh.version>
         <lombok.version>1.18.38</lombok.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         
@@ -45,10 +42,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
         
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -78,18 +71,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- High Performance Libraries -->
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>${disruptor.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>${caffeine.version}</version>
-        </dependency>
 
         <!-- Monitoring -->
         <dependency>
@@ -141,19 +122,6 @@
             <scope>test</scope>
         </dependency>
         
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
-            <version>${jmh.version}</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-generator-annprocess</artifactId>
-            <version>${jmh.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -201,22 +169,4 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>benchmark</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <mainClass>org.openjdk.jmh.Main</mainClass>
-                            <commandlineArgs>-i 5 -wi 5 -f 1</commandlineArgs>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
