@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.UserMapper">
+
+    <!-- Result Maps -->
+    <resultMap id="BaseResultMap" type="com.ecommerce.model.User">
+        <id column="id" property="id" />
+        <result column="email" property="email" />
+        <result column="password_hash" property="passwordHash" />
+        <result column="first_name" property="firstName" />
+        <result column="last_name" property="lastName" />
+        <result column="phone" property="phone" />
+        <result column="role" property="role" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+        <result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+        <result column="email_verified" property="emailVerified" />
+        <result column="email_verification_token" property="emailVerificationToken" />
+        <result column="email_verification_expiry" property="emailVerificationExpiry" />
+        <result column="password_reset_token" property="passwordResetToken" />
+        <result column="password_reset_expiry" property="passwordResetExpiry" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <resultMap id="UserWithAddressesResultMap" type="com.ecommerce.model.User" extends="BaseResultMap">
+        <collection property="addresses" ofType="com.ecommerce.model.Address">
+            <id column="addr_id" property="id" />
+            <result column="addr_user_id" property="userId" />
+            <result column="addr_type" property="type" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+            <result column="addr_first_name" property="firstName" />
+            <result column="addr_last_name" property="lastName" />
+            <result column="addr_phone" property="phone" />
+            <result column="addr_street" property="street" />
+            <result column="addr_city" property="city" />
+            <result column="addr_state" property="state" />
+            <result column="addr_postal_code" property="postalCode" />
+            <result column="addr_country" property="country" />
+            <result column="addr_is_default" property="isDefault" />
+            <result column="addr_created_at" property="createdAt" />
+            <result column="addr_updated_at" property="updatedAt" />
+        </collection>
+    </resultMap>
+
+    <!-- SQL Fragments -->
+    <sql id="Base_Column_List">
+        id, email, password_hash, first_name, last_name, phone, role, status,
+        email_verified, email_verification_token, email_verification_expiry,
+        password_reset_token, password_reset_expiry, created_at, updated_at
+    </sql>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.ecommerce.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (
+            email, password_hash, first_name, last_name, phone, role, status,
+            email_verified, email_verification_token, email_verification_expiry,
+            created_at, updated_at
+        ) VALUES (
+            #{email}, #{passwordHash}, #{firstName}, #{lastName}, #{phone}, 
+            #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler}, 
+            #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            #{emailVerified}, #{emailVerificationToken}, #{emailVerificationExpiry},
+            #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.ecommerce.model.User">
+        UPDATE users SET
+            email = #{email},
+            first_name = #{firstName},
+            last_name = #{lastName},
+            phone = #{phone},
+            role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            email_verified = #{emailVerified},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+    <!-- Select by ID -->
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <!-- Select all -->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Authentication queries -->
+    <select id="findByEmail" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <select id="findByEmailVerificationToken" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE email_verification_token = #{token}
+        AND email_verification_expiry > NOW()
+    </select>
+
+    <select id="findByPasswordResetToken" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE password_reset_token = #{token}
+        AND password_reset_expiry > NOW()
+    </select>
+
+    <!-- Email verification -->
+    <update id="updateEmailVerificationToken">
+        UPDATE users SET
+            email_verification_token = #{token},
+            email_verification_expiry = #{expiry},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="verifyEmail">
+        UPDATE users SET
+            email_verified = true,
+            email_verification_token = NULL,
+            email_verification_expiry = NULL,
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- Password reset -->
+    <update id="updatePasswordResetToken">
+        UPDATE users SET
+            password_reset_token = #{token},
+            password_reset_expiry = #{expiry},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE users SET
+            password_hash = #{passwordHash},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="clearPasswordResetToken">
+        UPDATE users SET
+            password_reset_token = NULL,
+            password_reset_expiry = NULL,
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- User management -->
+    <update id="updateStatus">
+        UPDATE users SET
+            status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateRole">
+        UPDATE users SET
+            role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProfile">
+        UPDATE users SET
+            first_name = #{firstName},
+            last_name = #{lastName},
+            phone = #{phone},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- Search and filtering -->
+    <select id="findByRole" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findByStatus" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="searchByName" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE LOWER(CONCAT(first_name, ' ', last_name)) LIKE LOWER(CONCAT('%', #{searchTerm}, '%'))
+        OR LOWER(email) LIKE LOWER(CONCAT('%', #{searchTerm}, '%'))
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findUnverifiedUsers" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM users
+        WHERE email_verified = false
+        AND email_verification_expiry &lt; #{expiredBefore}
+    </select>
+
+    <!-- Statistics -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM users
+    </select>
+
+    <select id="countByRole" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM users
+        WHERE role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+    </select>
+
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM users
+        WHERE status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+    </select>
+
+    <select id="countRegisteredAfter" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM users
+        WHERE created_at > #{date}
+    </select>
+
+    <!-- User with addresses -->
+    <select id="findByIdWithAddresses" resultMap="UserWithAddressesResultMap">
+        SELECT 
+            u.id, u.email, u.password_hash, u.first_name, u.last_name, u.phone, u.role, u.status,
+            u.email_verified, u.email_verification_token, u.email_verification_expiry,
+            u.password_reset_token, u.password_reset_expiry, u.created_at, u.updated_at,
+            a.id as addr_id, a.user_id as addr_user_id, a.type as addr_type,
+            a.first_name as addr_first_name, a.last_name as addr_last_name, a.phone as addr_phone,
+            a.street as addr_street, a.city as addr_city, a.state as addr_state,
+            a.postal_code as addr_postal_code, a.country as addr_country,
+            a.is_default as addr_is_default, a.created_at as addr_created_at, a.updated_at as addr_updated_at
+        FROM users u
+        LEFT JOIN addresses a ON u.id = a.user_id
+        WHERE u.id = #{id}
+    </select>
+
+    <!-- Check existence -->
+    <select id="existsByEmail" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM users WHERE email = #{email}
+    </select>
+
+    <select id="existsById" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM users WHERE id = #{id}
+    </select>
+
+</mapper>

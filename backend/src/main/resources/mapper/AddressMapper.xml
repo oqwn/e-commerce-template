@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.AddressMapper">
+
+    <!-- Result Map -->
+    <resultMap id="BaseResultMap" type="com.ecommerce.model.Address">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="type" property="type" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+        <result column="first_name" property="firstName" />
+        <result column="last_name" property="lastName" />
+        <result column="phone" property="phone" />
+        <result column="street" property="street" />
+        <result column="city" property="city" />
+        <result column="state" property="state" />
+        <result column="postal_code" property="postalCode" />
+        <result column="country" property="country" />
+        <result column="is_default" property="isDefault" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- SQL Fragments -->
+    <sql id="Base_Column_List">
+        id, user_id, type, first_name, last_name, phone, street, city, state,
+        postal_code, country, is_default, created_at, updated_at
+    </sql>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.ecommerce.model.Address" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO addresses (
+            user_id, type, first_name, last_name, phone, street, city, state,
+            postal_code, country, is_default, created_at, updated_at
+        ) VALUES (
+            #{userId}, #{type,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            #{firstName}, #{lastName}, #{phone}, #{street}, #{city}, #{state},
+            #{postalCode}, #{country}, #{isDefault}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.ecommerce.model.Address">
+        UPDATE addresses SET
+            type = #{type,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            first_name = #{firstName},
+            last_name = #{lastName},
+            phone = #{phone},
+            street = #{street},
+            city = #{city},
+            state = #{state},
+            postal_code = #{postalCode},
+            country = #{country},
+            is_default = #{isDefault},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM addresses WHERE id = #{id}
+    </delete>
+
+    <!-- Select by ID -->
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM addresses
+        WHERE id = #{id}
+    </select>
+
+    <!-- User address operations -->
+    <select id="findByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM addresses
+        WHERE user_id = #{userId}
+        ORDER BY is_default DESC, created_at DESC
+    </select>
+
+    <select id="findDefaultByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM addresses
+        WHERE user_id = #{userId} AND is_default = true
+        LIMIT 1
+    </select>
+
+    <delete id="deleteByUserId" parameterType="java.lang.Long">
+        DELETE FROM addresses WHERE user_id = #{userId}
+    </delete>
+
+    <!-- Default address management -->
+    <update id="clearDefaultForUser" parameterType="java.lang.Long">
+        UPDATE addresses SET
+            is_default = false,
+            updated_at = NOW()
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="setAsDefault">
+        UPDATE addresses SET
+            is_default = true,
+            updated_at = NOW()
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <!-- Address type operations -->
+    <select id="findByUserIdAndType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM addresses
+        WHERE user_id = #{userId} 
+        AND type = #{type,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        ORDER BY is_default DESC, created_at DESC
+    </select>
+
+    <!-- Validation -->
+    <select id="existsByUserIdAndId" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 
+        FROM addresses 
+        WHERE user_id = #{userId} AND id = #{id}
+    </select>
+
+    <select id="countByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) 
+        FROM addresses 
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>
