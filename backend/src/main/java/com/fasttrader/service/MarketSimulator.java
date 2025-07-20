@@ -4,8 +4,11 @@ import com.fasttrader.model.Order;
 import com.fasttrader.model.OrderBook;
 import com.fasttrader.model.enums.OrderSide;
 import com.fasttrader.model.enums.OrderType;
+import com.fasttrader.model.enums.MarketState;
+import com.fasttrader.engine.MatchingEngine;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -26,6 +29,10 @@ public class MarketSimulator {
     
     private final OrderService orderService;
     private final AccountService accountService;
+    private final MatchingEngine matchingEngine;
+    
+    @Value("${app.simulation.enabled:false}")
+    private boolean simulationEnabledConfig;
     
     private final Random random = new Random();
     private final AtomicBoolean simulationEnabled = new AtomicBoolean(false);
@@ -36,13 +43,30 @@ public class MarketSimulator {
     @EventListener(ApplicationReadyEvent.class)
     @Async
     public void initializeSimulation() {
+        if (!simulationEnabledConfig) {
+            log.info("Market simulation is disabled in configuration");
+            return;
+        }
+        
         log.info("Initializing market simulation...");
         
         try {
+            // Create test accounts
             for (String accountId : TEST_ACCOUNTS) {
-                accountService.createAccount(accountId, "Test Account " + accountId, 
-                    new BigDecimal("1000000.00"));
+                try {
+                    accountService.createAccount(accountId, "Test Account " + accountId, 
+                        new BigDecimal("1000000.00"));
+                    log.info("Created test account: {}", accountId);
+                } catch (Exception e) {
+                    log.debug("Account {} may already exist: {}", accountId, e.getMessage());
+                }
             }
+            
+            // Wait a bit for accounts to be ready
+            Thread.sleep(1000);
+            
+            // Open market for all symbols
+            openMarketForAllSymbols();
             
             placeInitialOrders();
             
@@ -90,6 +114,10 @@ public class MarketSimulator {
                 }
             }
         }
+    }
+    
+    public boolean isSimulationEnabled() {
+        return simulationEnabled.get();
     }
     
     @Scheduled(fixedDelay = 2000)
@@ -178,6 +206,15 @@ public class MarketSimulator {
             }
         } catch (Exception e) {
             log.debug("Failed to cancel simulated order: {}", e.getMessage());
+        }
+    }
+    
+    private void openMarketForAllSymbols() {
+        log.info("Opening market for all symbols");
+        for (String symbol : SYMBOLS) {
+            OrderBook orderBook = matchingEngine.getOrderBook(symbol);
+            orderBook.updateMarketState(MarketState.CONTINUOUS_TRADING);
+            log.info("Market opened for {}", symbol);
         }
     }
     
