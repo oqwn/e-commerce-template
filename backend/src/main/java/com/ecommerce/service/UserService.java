@@ -1,5 +1,6 @@
 package com.ecommerce.service;
 
+import com.ecommerce.dto.UpdateProfileRequest;
 import com.ecommerce.mapper.UserMapper;
 import com.ecommerce.model.User;
 import com.ecommerce.security.UserPrincipal;
@@ -173,6 +174,42 @@ public class UserService implements UserDetailsService {
     
     public void updateProfile(Long userId, String firstName, String lastName, String phone) {
         userMapper.updateProfile(userId, firstName, lastName, phone);
+    }
+    
+    public User updateProfile(String email, UpdateProfileRequest request) {
+        User user = findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        
+        userMapper.updateProfile(user.getId(), request.getFirstName(), request.getLastName(), request.getPhone());
+        
+        // Return updated user
+        return findById(user.getId());
+    }
+    
+    public User updateStatus(Long id, String status) {
+        User user = findById(id);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        
+        try {
+            User.UserStatus userStatus = User.UserStatus.valueOf(status.toUpperCase());
+            updateUserStatus(id, userStatus);
+            return findById(id);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid status: " + status);
+        }
+    }
+    
+    public void deleteUser(Long id) {
+        User user = findById(id);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        
+        userMapper.deleteById(id);
     }
     
     public void changePassword(Long userId, String currentPassword, String newPassword) {

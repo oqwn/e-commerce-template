@@ -90,6 +90,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
+        
+        <!-- Flyway Migration -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
 
         <!-- Database -->
         <dependency>
@@ -198,6 +208,15 @@
                 </configuration>
             </plugin>
             
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <url>jdbc:h2:file:./data/ecommerce;MODE=PostgreSQL</url>
+                    <user>sa</user>
+                    <password></password>
+                </configuration>
+            </plugin>
             
         </plugins>
     </build>

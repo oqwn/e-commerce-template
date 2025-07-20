@@ -49,12 +49,15 @@ This document outlines the architecture for an open-source, modular e-commerce p
 
 ### Core Modules
 
-#### 1. User Management Module
-**Package**: `com.ecommerce.user`
-- User registration, authentication, and authorization
-- Profile management and security settings
-- Multi-role support (Buyer, Seller, Admin)
-- OAuth 2.0 integration for third-party login
+#### 1. User Management Module ✅ **IMPLEMENTED**
+**Package**: `com.ecommerce`
+- ✅ User registration, authentication, and authorization (JWT-based)
+- ✅ Profile management and security settings (UserController, AddressController)
+- ✅ Multi-role support (Buyer, Seller, Admin) with @PreAuthorize
+- ✅ Email verification with token-based validation
+- ✅ Password reset functionality with secure tokens
+- ✅ Address management with multiple addresses per user
+- 🚧 OAuth 2.0 integration for third-party login (UI ready, backend pending)
 
 #### 2. Product Management Module
 **Package**: `com.ecommerce.product`
@@ -90,21 +93,26 @@ This document outlines the architecture for an open-source, modular e-commerce p
 
 ### Technology Stack
 
-#### Backend
-- **Framework**: Spring Boot 3.x
-- **Database**: PostgreSQL (primary), Redis (caching, sessions)
-- **Message Queue**: RabbitMQ or Apache Kafka
-- **Search Engine**: Elasticsearch
-- **File Storage**: AWS S3 or local file system
-- **Monitoring**: Prometheus + Grafana
-- **Testing**: JUnit 5, TestContainers
+#### Backend ✅ **IMPLEMENTED**
+- **Framework**: Spring Boot 3.4.5 ✅
+- **Database**: H2 with PostgreSQL compatibility mode (production-ready migration system) ✅
+- **Security**: Spring Security with JWT authentication ✅
+- **ORM**: MyBatis for SQL mapping ✅
+- **Migration**: Flyway for database versioning ✅
+- **Validation**: Bean validation with custom DTOs ✅
+- **Email**: Spring Mail for verification and password reset ✅
+- **Monitoring**: Actuator endpoints with Prometheus metrics ✅
+- **Testing**: Basic structure ready, JUnit 5 configured ✅
 
-#### Frontend
-- **Framework**: React 18+ with TypeScript
-- **State Management**: React Query + Context API
-- **UI Components**: Tailwind CSS + Headless UI
-- **Build Tool**: Vite
-- **Testing**: Vitest, React Testing Library
+#### Frontend ✅ **IMPLEMENTED**
+- **Framework**: React 18+ with TypeScript ✅
+- **State Management**: Context API for authentication ✅
+- **UI Components**: Tailwind CSS + custom components ✅
+- **Build Tool**: Vite ✅
+- **Authentication**: Complete auth flow with JWT handling ✅
+- **Routing**: React Router with protected routes ✅
+- **Code Quality**: ESLint + TypeScript strict mode ✅
+- **Testing**: Vitest configured, basic structure ready ✅
 
 #### Infrastructure
 - **Containerization**: Docker
@@ -116,21 +124,42 @@ This document outlines the architecture for an open-source, modular e-commerce p
 
 ### Core Entities
 
-#### Users
+#### Users ✅ **IMPLEMENTED**
 ```sql
+-- Migration V1__Initial_schema.sql
 users (
-  id, email, password_hash, role, status,
-  created_at, updated_at
-)
-
-user_profiles (
-  user_id, first_name, last_name, phone,
-  birth_date, avatar_url, preferences
+  id BIGSERIAL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  phone VARCHAR(20),
+  role VARCHAR(20) NOT NULL DEFAULT 'BUYER' CHECK (role IN ('BUYER', 'SELLER', 'ADMIN')),
+  status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  email_verification_token VARCHAR(255),
+  email_verification_expiry TIMESTAMP,
+  password_reset_token VARCHAR(255),
+  password_reset_expiry TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
 
 addresses (
-  id, user_id, type, street, city,
-  state, postal_code, country, is_default
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type VARCHAR(20) NOT NULL DEFAULT 'HOME' CHECK (type IN ('HOME', 'WORK', 'OTHER')),
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  phone VARCHAR(20),
+  street VARCHAR(255),
+  city VARCHAR(100),
+  state VARCHAR(100),
+  postal_code VARCHAR(20),
+  country VARCHAR(2) NOT NULL DEFAULT 'US',
+  is_default BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
 ```
 
@@ -199,24 +228,35 @@ store_analytics (
 
 ### RESTful Endpoints
 
-#### Authentication
+#### Authentication ✅ **IMPLEMENTED**
 ```
-POST   /api/auth/register
-POST   /api/auth/login
-POST   /api/auth/logout
-POST   /api/auth/refresh
-POST   /api/auth/forgot-password
-POST   /api/auth/reset-password
+POST   /api/auth/register           ✅ - User registration with email verification
+POST   /api/auth/login              ✅ - JWT-based login with refresh tokens
+POST   /api/auth/logout             ✅ - Secure logout
+POST   /api/auth/refresh            ✅ - Token refresh mechanism
+POST   /api/auth/forgot-password    ✅ - Password reset initiation
+POST   /api/auth/reset-password     ✅ - Password reset completion
+POST   /api/auth/verify-email       ✅ - Email verification
+POST   /api/auth/resend-verification ✅ - Resend verification email
 ```
 
-#### Users
+#### Users ✅ **IMPLEMENTED**
 ```
-GET    /api/users/profile
-PUT    /api/users/profile
-GET    /api/users/addresses
-POST   /api/users/addresses
-PUT    /api/users/addresses/{id}
-DELETE /api/users/addresses/{id}
+GET    /api/users/profile           ✅ - Get current user profile
+PUT    /api/users/profile           ✅ - Update user profile
+GET    /api/users/{id}              ✅ - Get user by ID (admin/self)
+PUT    /api/users/{id}/status       ✅ - Update user status (admin only)
+DELETE /api/users/{id}              ✅ - Delete user (admin/self)
+
+# Address Management
+GET    /api/users/me/addresses      ✅ - Get current user addresses
+GET    /api/users/{id}/addresses    ✅ - Get user addresses
+POST   /api/users/me/addresses      ✅ - Add address for current user
+POST   /api/users/{id}/addresses    ✅ - Add address for user
+PUT    /api/users/{id}/addresses/{addressId}    ✅ - Update address
+DELETE /api/users/{id}/addresses/{addressId}    ✅ - Delete address
+PUT    /api/users/{id}/addresses/{addressId}/default  ✅ - Set default address
+GET    /api/users/{id}/addresses/default       ✅ - Get default address
 ```
 
 #### Products
