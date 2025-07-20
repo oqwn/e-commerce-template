@@ -4,13 +4,15 @@
 
 This TODO list is organized by development phases, prioritizing MVP features first, then progressive enhancement based on the user stories. Each item includes priority levels and estimated effort.
 
+**Last Updated**: 2025-07-20
+
 **Current Status**: The project has been converted from a trading engine to a clean e-commerce template. We have inherited a solid infrastructure foundation:
 
 **✅ Already Implemented**:
 - Spring Boot 3.x backend with clean `com.ecommerce` package structure
 - React 18+ frontend with TypeScript and Tailwind CSS
 - Docker containers (dev/prod) with health checks and multi-arch builds
-- PostgreSQL database with connection pooling
+- MySQL database with Flyway migrations and setup scripts
 - Redis for caching and session storage
 - Prometheus + Grafana monitoring stack
 - Environment-based configurations
@@ -20,6 +22,12 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 - **Complete CI/CD pipeline** with GitHub Actions (testing, security scanning, deployments)
 - Security scanning with Trivy
 - Code coverage reporting with Codecov
+- **JWT-based authentication** with login/logout functionality
+- **User registration** with email verification endpoints
+- **Role-based access control** (BUYER/SELLER/ADMIN)
+- **User profile management** with update capabilities
+- **Address management system** with full CRUD operations
+- **Password reset functionality** (endpoints ready)
 
 **Priority Levels**:
 - 🔥 **Critical** - MVP blockers
@@ -42,29 +50,30 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 - [x] ✅ **S** Configure Docker containers for development
 - [x] ✅ **M** Set up PostgreSQL database with basic schema
 - [x] ✅ **S** Configure Redis for caching and sessions
+- [x] ✅ **S** Migrate from H2 to MySQL database (completed with setup scripts)
 - [ ] 🔥 **S** Set up API documentation with OpenAPI/Swagger
 - [x] ✅ **M** Implement comprehensive logging and monitoring (Prometheus + Grafana)
 - [x] ✅ **S** Configure environment-based configurations
 
 ### Authentication & User Management
-- [ ] 🔥 **M** Implement user registration and email verification
-- [ ] 🔥 **M** Build login/logout with JWT authentication
-- [ ] 🔥 **S** Create password reset functionality  
-- [ ] 🔥 **M** Implement role-based access control (Buyer/Seller/Admin)
-- [ ] ⭐ **M** Build user profile management
-- [ ] ⭐ **M** Create address management system
+- [x] 🔥 **M** Implement user registration and email verification (registration done, email verification endpoints ready but email sending not configured)
+- [x] 🔥 **M** Build login/logout with JWT authentication (✅ Complete with JWT token generation and validation)
+- [x] 🔥 **S** Create password reset functionality (endpoints implemented, email sending not configured)
+- [x] 🔥 **M** Implement role-based access control (✅ Complete with BUYER/SELLER/ADMIN roles)
+- [x] ⭐ **M** Build user profile management (✅ Complete with update profile and view profile endpoints)
+- [x] ⭐ **M** Create address management system (✅ Complete with full CRUD operations for addresses)
 - [ ] 📈 **M** Add OAuth 2.0 integration (Google, Facebook)
 - [ ] 📈 **S** Implement two-factor authentication
 
 ### Product Management (Backend)
-- [ ] 🔥 **L** Design and implement product database schema
-- [ ] 🔥 **M** Create product CRUD APIs
-- [ ] 🔥 **M** Implement category management system
-- [ ] 🔥 **M** Build product search and filtering APIs
-- [ ] ⭐ **M** Add product image upload functionality
-- [ ] ⭐ **M** Implement product reviews and ratings
-- [ ] ⭐ **S** Create product inventory tracking
-- [ ] 📈 **M** Add product variants (size, color, etc.)
+- [x] 🔥 **L** Design and implement product database schema (✅ Complete with all tables)
+- [x] 🔥 **M** Create product CRUD APIs (✅ Full CRUD operations implemented)
+- [x] 🔥 **M** Implement category management system (✅ Complete with hierarchy support)
+- [x] 🔥 **M** Build product search and filtering APIs (✅ Advanced search with multiple filters)
+- [ ] ⭐ **M** Add product image upload functionality (image URLs supported, file upload pending)
+- [ ] ⭐ **M** Implement product reviews and ratings (schema ready, endpoints pending)
+- [x] ⭐ **S** Create product inventory tracking (✅ Complete with transaction history)
+- [x] 📈 **M** Add product variants (size, color, etc.) (✅ Full variant support implemented)
 
 ### Store Management
 - [ ] 🔥 **M** Create seller store registration

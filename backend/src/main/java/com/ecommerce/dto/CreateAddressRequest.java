@@ -36,5 +36,5 @@ public class CreateAddressRequest {
     @Size(min = 2, max = 2, message = "Country code must be exactly 2 characters")
     private String country = "US";
     
-    private boolean isDefault = false;
+    private Boolean isDefault = false;
 }

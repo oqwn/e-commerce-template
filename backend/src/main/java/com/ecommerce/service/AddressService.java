@@ -23,7 +23,7 @@ public class AddressService {
 
     public Address createAddress(Long userId, CreateAddressRequest request) {
         // If this is the user's first address or is set as default, unset other defaults
-        if (request.isDefault()) {
+        if (request.getIsDefault()) {
             addressMapper.clearDefaultForUser(userId);
         }
 
@@ -38,7 +38,7 @@ public class AddressService {
         address.setState(request.getState());
         address.setPostalCode(request.getPostalCode());
         address.setCountry(request.getCountry() != null ? request.getCountry() : "US");
-        address.setIsDefault(request.isDefault());
+        address.setIsDefault(request.getIsDefault());
 
         addressMapper.insert(address);
         

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.CategoryMapper">
+    
+    <resultMap id="categoryTreeMap" type="com.ecommerce.model.Category" extends="categoryResultMap">
+        <collection property="children" ofType="com.ecommerce.model.Category"
+                   select="com.ecommerce.mapper.CategoryMapper.findByParentId" 
+                   column="id"/>
+    </resultMap>
+    
+    <select id="findCategoryTree" resultMap="categoryTreeMap">
+        SELECT * FROM categories 
+        WHERE parent_id IS NULL AND is_active = 1
+        ORDER BY display_order
+    </select>
+    
+    <select id="findCategoryPath" resultMap="categoryResultMap">
+        WITH RECURSIVE category_path AS (
+            SELECT * FROM categories WHERE id = #{categoryId}
+            UNION ALL
+            SELECT c.* FROM categories c
+            JOIN category_path cp ON c.id = cp.parent_id
+        )
+        SELECT * FROM category_path ORDER BY parent_id NULLS FIRST
+    </select>
+    
+    <select id="findAllWithProductCount" resultMap="categoryResultMap">
+        SELECT c.*, COUNT(p.id) as product_count 
+        FROM categories c
+        LEFT JOIN products p ON c.id = p.category_id AND p.status = 'ACTIVE'
+        WHERE c.is_active = 1
+        GROUP BY c.id
+        ORDER BY c.display_order
+    </select>
+    
+    <update id="updateDisplayOrder">
+        UPDATE categories 
+        SET display_order = CASE id
+        <foreach collection="orderMap" index="id" item="order">
+            WHEN #{id} THEN #{order}
+        </foreach>
+        END
+        WHERE id IN
+        <foreach collection="orderMap.keySet()" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    
+</mapper>

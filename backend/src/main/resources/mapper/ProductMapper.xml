@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.ProductMapper">
+    
+    <resultMap id="productDetailMap" type="com.ecommerce.model.Product" extends="productResultMap">
+        <association property="seller" javaType="com.ecommerce.model.User">
+            <id property="id" column="seller_id"/>
+            <result property="email" column="seller_email"/>
+            <result property="firstName" column="seller_first_name"/>
+            <result property="lastName" column="seller_last_name"/>
+        </association>
+        <association property="category" javaType="com.ecommerce.model.Category">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name"/>
+            <result property="slug" column="category_slug"/>
+        </association>
+        <collection property="images" ofType="com.ecommerce.model.ProductImage">
+            <id property="id" column="image_id"/>
+            <result property="productId" column="product_id"/>
+            <result property="imageUrl" column="image_url"/>
+            <result property="altText" column="alt_text"/>
+            <result property="displayOrder" column="image_display_order"/>
+            <result property="isPrimary" column="is_primary"/>
+        </collection>
+        <collection property="tags" ofType="string">
+            <result column="tag"/>
+        </collection>
+        <collection property="attributes" ofType="com.ecommerce.model.ProductAttribute">
+            <id property="id" column="attr_id"/>
+            <result property="productId" column="product_id"/>
+            <result property="attributeName" column="attribute_name"/>
+            <result property="attributeValue" column="attribute_value"/>
+        </collection>
+    </resultMap>
+    
+    <select id="search" parameterType="map" resultMap="productResultMap">
+        SELECT DISTINCT p.*,
+            (SELECT AVG(rating) FROM product_reviews WHERE product_id = p.id AND status = 'APPROVED') as average_rating,
+            (SELECT COUNT(*) FROM product_reviews WHERE product_id = p.id AND status = 'APPROVED') as review_count
+        FROM products p
+        LEFT JOIN product_tags pt ON p.id = pt.product_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (p.name LIKE CONCAT('%', #{keyword}, '%') 
+                OR p.description LIKE CONCAT('%', #{keyword}, '%')
+                OR p.sku LIKE CONCAT('%', #{keyword}, '%')
+                OR pt.tag LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="categoryId != null">
+            AND p.category_id = #{categoryId}
+        </if>
+        <if test="sellerId != null">
+            AND p.seller_id = #{sellerId}
+        </if>
+        <if test="minPrice != null">
+            AND p.price >= #{minPrice}
+        </if>
+        <if test="maxPrice != null">
+            AND p.price &lt;= #{maxPrice}
+        </if>
+        <if test="status != null">
+            AND p.status = #{status}
+        </if>
+        <if test="featured != null">
+            AND p.featured = #{featured}
+        </if>
+        <if test="tags != null and tags.size() > 0">
+            AND p.id IN (
+                SELECT product_id FROM product_tags 
+                WHERE tag IN
+                <foreach item="tag" collection="tags" open="(" separator="," close=")">
+                    #{tag}
+                </foreach>
+            )
+        </if>
+        <choose>
+            <when test="sortBy == 'price_asc'">
+                ORDER BY p.price ASC
+            </when>
+            <when test="sortBy == 'price_desc'">
+                ORDER BY p.price DESC
+            </when>
+            <when test="sortBy == 'name'">
+                ORDER BY p.name ASC
+            </when>
+            <when test="sortBy == 'newest'">
+                ORDER BY p.created_at DESC
+            </when>
+            <when test="sortBy == 'rating'">
+                ORDER BY average_rating DESC NULLS LAST
+            </when>
+            <otherwise>
+                ORDER BY p.created_at DESC
+            </otherwise>
+        </choose>
+        <if test="limit != null">
+            LIMIT #{limit}
+            <if test="offset != null">
+                OFFSET #{offset}
+            </if>
+        </if>
+    </select>
+    
+    <select id="findProductDetail" resultMap="productDetailMap">
+        SELECT 
+            p.*,
+            u.id as seller_id, u.email as seller_email, u.first_name as seller_first_name, u.last_name as seller_last_name,
+            c.id as category_id, c.name as category_name, c.slug as category_slug,
+            pi.id as image_id, pi.image_url, pi.alt_text, pi.display_order as image_display_order, pi.is_primary,
+            pt.tag,
+            pa.id as attr_id, pa.attribute_name, pa.attribute_value
+        FROM products p
+        LEFT JOIN users u ON p.seller_id = u.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN product_images pi ON p.id = pi.product_id
+        LEFT JOIN product_tags pt ON p.id = pt.product_id
+        LEFT JOIN product_attributes pa ON p.id = pa.product_id
+        WHERE p.id = #{id}
+        ORDER BY pi.display_order, pa.id
+    </select>
+    
+    <select id="findProductsByIds" resultMap="productResultMap">
+        SELECT * FROM products 
+        WHERE id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    
+    <select id="findSimilarProducts" resultMap="productResultMap">
+        SELECT DISTINCT p2.* 
+        FROM products p1
+        JOIN products p2 ON p1.category_id = p2.category_id
+        WHERE p1.id = #{productId} 
+        AND p2.id != #{productId}
+        AND p2.status = 'ACTIVE'
+        ORDER BY ABS(p2.price - p1.price)
+        LIMIT #{limit}
+    </select>
+    
+</mapper>
