@@ -79,14 +79,26 @@ public class MarketSimulator {
     }
     
     private void placeInitialOrders() {
+        log.info("Placing initial orders for all symbols");
+        
         for (String symbol : SYMBOLS) {
             BigDecimal basePrice = getInitialPrice(symbol);
             
-            for (int i = 1; i <= 5; i++) {
-                BigDecimal bidPrice = basePrice.subtract(
-                    BigDecimal.valueOf(i * 0.01)).setScale(2, RoundingMode.HALF_UP);
-                BigDecimal askPrice = basePrice.add(
-                    BigDecimal.valueOf(i * 0.01)).setScale(2, RoundingMode.HALF_UP);
+            // Place more aggressive initial orders to ensure bid/ask presence
+            // Start with tight spreads
+            BigDecimal bidStart = basePrice.subtract(BigDecimal.valueOf(0.05));
+            BigDecimal askStart = basePrice.add(BigDecimal.valueOf(0.05));
+            
+            // Place 10 levels on each side for better depth
+            for (int i = 0; i < 10; i++) {
+                BigDecimal bidPrice = bidStart.subtract(
+                    BigDecimal.valueOf(i * 0.05)).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal askPrice = askStart.add(
+                    BigDecimal.valueOf(i * 0.05)).setScale(2, RoundingMode.HALF_UP);
+                
+                // Larger quantities for better liquidity
+                Long bidQuantity = 500L + random.nextInt(1500);
+                Long askQuantity = 500L + random.nextInt(1500);
                 
                 Order buyOrder = Order.builder()
                     .accountId("MM001")
@@ -94,7 +106,7 @@ public class MarketSimulator {
                     .side(OrderSide.BUY)
                     .type(OrderType.LIMIT)
                     .price(bidPrice)
-                    .quantity(1000L + random.nextInt(4000))
+                    .quantity(bidQuantity)
                     .build();
                 
                 Order sellOrder = Order.builder()
@@ -103,17 +115,21 @@ public class MarketSimulator {
                     .side(OrderSide.SELL)
                     .type(OrderType.LIMIT)
                     .price(askPrice)
-                    .quantity(1000L + random.nextInt(4000))
+                    .quantity(askQuantity)
                     .build();
                 
                 try {
                     orderService.placeOrder(buyOrder);
                     orderService.placeOrder(sellOrder);
+                    log.debug("Placed initial orders for {} - Bid: {} @ {}, Ask: {} @ {}", 
+                        symbol, bidQuantity, bidPrice, askQuantity, askPrice);
                 } catch (Exception e) {
-                    log.error("Failed to place initial order", e);
+                    log.error("Failed to place initial order for {}", symbol, e);
                 }
             }
         }
+        
+        log.info("Initial order placement completed");
     }
     
     public boolean isSimulationEnabled() {
@@ -127,6 +143,9 @@ public class MarketSimulator {
         }
         
         try {
+            // First ensure all symbols have bid/ask
+            ensureBidAskForAllSymbols();
+            
             String symbol = SYMBOLS.get(random.nextInt(SYMBOLS.size()));
             String accountId = TEST_ACCOUNTS.get(random.nextInt(TEST_ACCOUNTS.size()));
             
@@ -215,6 +234,58 @@ public class MarketSimulator {
             OrderBook orderBook = matchingEngine.getOrderBook(symbol);
             orderBook.updateMarketState(MarketState.CONTINUOUS_TRADING);
             log.info("Market opened for {}", symbol);
+        }
+    }
+    
+    private void ensureBidAskForAllSymbols() {
+        for (String symbol : SYMBOLS) {
+            OrderBook orderBook = matchingEngine.getOrderBook(symbol);
+            
+            // Check if bid is missing
+            if (orderBook.getBestBid() == null || orderBook.getBidLevels().isEmpty()) {
+                BigDecimal basePrice = getInitialPrice(symbol);
+                BigDecimal bidPrice = basePrice.subtract(BigDecimal.valueOf(0.10))
+                    .setScale(2, RoundingMode.HALF_UP);
+                
+                Order buyOrder = Order.builder()
+                    .accountId("MM001")
+                    .symbol(symbol)
+                    .side(OrderSide.BUY)
+                    .type(OrderType.LIMIT)
+                    .price(bidPrice)
+                    .quantity(1000L)
+                    .build();
+                
+                try {
+                    orderService.placeOrder(buyOrder);
+                    log.debug("Added missing bid for {} at {}", symbol, bidPrice);
+                } catch (Exception e) {
+                    log.error("Failed to add bid for {}", symbol, e);
+                }
+            }
+            
+            // Check if ask is missing
+            if (orderBook.getBestAsk() == null || orderBook.getAskLevels().isEmpty()) {
+                BigDecimal basePrice = getInitialPrice(symbol);
+                BigDecimal askPrice = basePrice.add(BigDecimal.valueOf(0.10))
+                    .setScale(2, RoundingMode.HALF_UP);
+                
+                Order sellOrder = Order.builder()
+                    .accountId("MM002")
+                    .symbol(symbol)
+                    .side(OrderSide.SELL)
+                    .type(OrderType.LIMIT)
+                    .price(askPrice)
+                    .quantity(1000L)
+                    .build();
+                
+                try {
+                    orderService.placeOrder(sellOrder);
+                    log.debug("Added missing ask for {} at {}", symbol, askPrice);
+                } catch (Exception e) {
+                    log.error("Failed to add ask for {}", symbol, e);
+                }
+            }
         }
     }
     
