@@ -1,20 +1,22 @@
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     phone VARCHAR(20),
-    role VARCHAR(20) NOT NULL DEFAULT 'BUYER' CHECK (role IN ('BUYER', 'SELLER', 'ADMIN')),
-    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
-    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    role VARCHAR(20) NOT NULL DEFAULT 'BUYER',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    email_verified TINYINT(1) NOT NULL DEFAULT 0,
     email_verification_token VARCHAR(255),
-    email_verification_expiry TIMESTAMP,
+    email_verification_expiry TIMESTAMP NULL,
     password_reset_token VARCHAR(255),
-    password_reset_expiry TIMESTAMP,
+    password_reset_expiry TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT chk_role CHECK (role IN ('BUYER', 'SELLER', 'ADMIN')),
+    CONSTRAINT chk_status CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED'))
 );
 
 -- Create indexes for users table
@@ -27,9 +29,9 @@ CREATE INDEX idx_users_created_at ON users(created_at);
 
 -- Create addresses table
 CREATE TABLE IF NOT EXISTS addresses (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    type VARCHAR(20) NOT NULL DEFAULT 'HOME' CHECK (type IN ('HOME', 'WORK', 'OTHER')),
+    id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    type VARCHAR(20) NOT NULL DEFAULT 'HOME',
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     phone VARCHAR(20),
@@ -38,9 +40,11 @@ CREATE TABLE IF NOT EXISTS addresses (
     state VARCHAR(100),
     postal_code VARCHAR(20),
     country VARCHAR(2) NOT NULL DEFAULT 'US',
-    is_default BOOLEAN NOT NULL DEFAULT FALSE,
+    is_default TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_addresses_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT chk_type CHECK (type IN ('HOME', 'WORK', 'OTHER'))
 );
 
 -- Create indexes for addresses table
@@ -48,5 +52,4 @@ CREATE INDEX idx_addresses_user_id ON addresses(user_id);
 CREATE INDEX idx_addresses_user_id_default ON addresses(user_id, is_default);
 CREATE INDEX idx_addresses_type ON addresses(type);
 
--- Note: H2 doesn't support PostgreSQL-style triggers for updated_at
--- The updated_at field will be managed by the application layer
+-- Note: MySQL automatically updates the updated_at field with ON UPDATE CURRENT_TIMESTAMP
