@@ -35,7 +35,9 @@ const api = {
       throw new Error('Unauthorized');
     }
     
-    const data = await response.json();
+    // Handle empty response body
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
     
     if (!response.ok) {
       throw { response: { data, status: response.status } };
@@ -56,7 +58,9 @@ const api = {
       throw new Error('Unauthorized');
     }
     
-    const data = await response.json();
+    // Handle empty response body
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
     
     if (!response.ok) {
       throw { response: { data, status: response.status } };
@@ -77,7 +81,9 @@ const api = {
       throw new Error('Unauthorized');
     }
     
-    const data = await response.json();
+    // Handle empty response body
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
     
     if (!response.ok) {
       throw { response: { data, status: response.status } };
@@ -97,7 +103,9 @@ const api = {
       throw new Error('Unauthorized');
     }
     
-    const data = await response.json();
+    // Handle empty response body
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
     
     if (!response.ok) {
       throw { response: { data, status: response.status } };
@@ -126,7 +134,9 @@ const api = {
       throw new Error('Unauthorized');
     }
     
-    const data = await response.json();
+    // Handle empty response body
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
     
     if (!response.ok) {
       throw { response: { data, status: response.status } };

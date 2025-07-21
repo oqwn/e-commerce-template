@@ -50,7 +50,6 @@ public class CartController {
     }
     
     @PutMapping("/items/{itemId}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse> updateCartItem(
             @PathVariable Long itemId,
             @RequestBody UpdateCartItemRequest request,
