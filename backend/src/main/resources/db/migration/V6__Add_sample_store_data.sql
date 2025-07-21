@@ -18,7 +18,15 @@ INSERT INTO stores (
     verification_date,
     rating,
     total_reviews,
-    total_products
+    total_products,
+    return_policy,
+    shipping_policy,
+    privacy_policy,
+    terms_and_conditions,
+    website_url,
+    facebook_url,
+    instagram_url,
+    twitter_url
 ) VALUES (
     (SELECT id FROM users WHERE email = 'seller@ecommerce.com'),
     'TechGadget Store',
@@ -38,7 +46,15 @@ INSERT INTO stores (
     NOW(),
     4.5,
     127,
-    0  -- Will be updated by trigger
+    0,  -- Will be updated by trigger
+    'We offer a 30-day return policy for all products. Items must be in original condition with all accessories and packaging. Refunds will be processed within 5-7 business days after receiving the returned item.',
+    'We ship all orders within 1-2 business days. Standard shipping takes 3-5 business days. Express shipping (1-2 days) is available for an additional fee. Free shipping on orders over $50.',
+    'We respect your privacy and protect your personal information. We do not share your data with third parties without your consent. All transactions are secured with SSL encryption.',
+    'By purchasing from TechGadget Store, you agree to our terms of service. All products come with manufacturer warranty. We are not responsible for misuse or damage caused by improper handling.',
+    'https://www.techgadget.com',
+    'https://facebook.com/techgadget',
+    'https://instagram.com/techgadget',
+    'https://twitter.com/techgadget'
 );
 
 -- Add store categories
@@ -143,38 +159,6 @@ FROM (
     SELECT 6
 ) days;
 
--- Insert sample store reviews
-INSERT INTO store_reviews (
-    store_id,
-    user_id,
-    rating,
-    title,
-    comment,
-    is_verified_purchase,
-    status,
-    created_at
-) VALUES
-(
-    (SELECT id FROM stores WHERE store_slug = 'techgadget-store'),
-    (SELECT id FROM users WHERE email = 'buyer@ecommerce.com'),
-    5,
-    'Excellent service and fast shipping!',
-    'I ordered a laptop from TechGadget Store and it arrived the next day. The product was exactly as described and the customer service was outstanding. Highly recommended!',
-    1,
-    'APPROVED',
-    DATE_SUB(NOW(), INTERVAL 7 DAY)
-),
-(
-    (SELECT id FROM stores WHERE store_slug = 'techgadget-store'),
-    (SELECT id FROM users WHERE email = 'admin@ecommerce.com'),
-    4,
-    'Good selection, fair prices',
-    'TechGadget Store has a wide variety of products. Prices are competitive and the website is easy to navigate. Only minor issue was a slight delay in shipping, but overall a good experience.',
-    1,
-    'APPROVED',
-    DATE_SUB(NOW(), INTERVAL 14 DAY)
-);
-
 -- Insert verification documents (already approved)
 INSERT INTO store_verification_documents (
     store_id,
@@ -207,20 +191,12 @@ INSERT INTO store_verification_documents (
     DATE_SUB(NOW(), INTERVAL 30 DAY)
 );
 
--- Update existing products to link them to the store
-UPDATE products p
-SET p.store_id = (SELECT id FROM stores WHERE seller_id = p.seller_id)
-WHERE p.seller_id = (SELECT id FROM users WHERE email = 'seller@ecommerce.com');
+-- Update existing products to link them to the store (do this last to avoid trigger conflicts)
+-- Get the store ID first
+SET @store_id = (SELECT id FROM stores WHERE store_slug = 'techgadget-store');
+SET @seller_id = (SELECT id FROM users WHERE email = 'seller@ecommerce.com');
 
--- Add social media links and policies to the store
-UPDATE stores
-SET 
-    return_policy = 'We offer a 30-day return policy for all products. Items must be in original condition with all accessories and packaging. Refunds will be processed within 5-7 business days after receiving the returned item.',
-    shipping_policy = 'We ship all orders within 1-2 business days. Standard shipping takes 3-5 business days. Express shipping (1-2 days) is available for an additional fee. Free shipping on orders over $50.',
-    privacy_policy = 'We respect your privacy and protect your personal information. We do not share your data with third parties without your consent. All transactions are secured with SSL encryption.',
-    terms_and_conditions = 'By purchasing from TechGadget Store, you agree to our terms of service. All products come with manufacturer warranty. We are not responsible for misuse or damage caused by improper handling.',
-    website_url = 'https://www.techgadget.com',
-    facebook_url = 'https://facebook.com/techgadget',
-    instagram_url = 'https://instagram.com/techgadget',
-    twitter_url = 'https://twitter.com/techgadget'
-WHERE store_slug = 'techgadget-store';
+-- Update products directly using the variables
+UPDATE products 
+SET store_id = @store_id
+WHERE seller_id = @seller_id AND store_id IS NULL;

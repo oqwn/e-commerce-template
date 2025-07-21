@@ -53,6 +53,10 @@ public class SecurityConfig {
                 // Public product browsing (will be added later)
                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
                 
+                // Store endpoints - public read access but authenticated write access
+                .requestMatchers(HttpMethod.GET, "/stores/**").permitAll()
+                .requestMatchers("/stores/**").authenticated()
+                
                 // Admin only endpoints
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 
