@@ -32,10 +32,14 @@ const StoreManagement: React.FC = () => {
 
   const fetchStore = async () => {
     try {
+      console.log('Fetching store data...');
       const response = await api.get('/stores/my-store');
+      console.log('Store API response:', response);
       if (response.data.data) {
+        console.log('Setting store data:', response.data.data);
         setStore(response.data.data);
       } else {
+        console.log('No store data, redirecting to register');
         navigate('/seller/store/register');
       }
     } catch (error) {
@@ -131,8 +135,18 @@ const StoreManagement: React.FC = () => {
   }
 
   if (!store) {
-    return null;
+    console.log('Store is null, not rendering component');
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-gray-500">Store data not available</p>
+          <p className="text-sm text-gray-400 mt-2">isLoading: {isLoading.toString()}</p>
+        </div>
+      </div>
+    );
   }
+
+  console.log('Rendering store management with store:', store);
 
   const tabs = [
     { id: 'general', name: 'General Info', icon: BuildingStorefrontIcon },
