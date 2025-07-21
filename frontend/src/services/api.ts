@@ -106,6 +106,35 @@ const api = {
     return data;
   },
 
+  upload: async (endpoint: string, formData: FormData) => {
+    const headers: Record<string, string> = {};
+    
+    // Get token from localStorage or authToken
+    const token = authToken || localStorage.getItem('accessToken');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers,
+      body: formData,
+      credentials: 'include',
+    });
+    
+    if (response.status === 401) {
+      throw new Error('Unauthorized');
+    }
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw { response: { data, status: response.status } };
+    }
+    
+    return data;
+  },
+
   health: () => api.get('/health'),
 };
 

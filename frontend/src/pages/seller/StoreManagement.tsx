@@ -53,23 +53,7 @@ const StoreManagement: React.FC = () => {
 
     try {
       setIsSaving(true);
-      const headers: Record<string, string> = {};
-      const authToken = (api as any).authToken || localStorage.getItem('accessToken');
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetch(`http://localhost:8080/api/stores/${store.id}/${type}`, {
-        method: 'POST',
-        headers,
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-      
-      const data = await response.json();
+      const data = await api.upload(`/stores/${store.id}/${type}`, formData);
       
       setStore(prev => prev ? {
         ...prev,
