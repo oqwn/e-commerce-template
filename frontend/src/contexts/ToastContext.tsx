@@ -8,12 +8,14 @@ interface ToastItem {
   duration?: number;
 }
 
+/* eslint-disable no-unused-vars */
 interface ToastContextType {
   showToast: (message: string, type?: 'success' | 'error' | 'info', duration?: number) => void;
   showSuccess: (message: string, duration?: number) => void;
   showError: (message: string, duration?: number) => void;
   showInfo: (message: string, duration?: number) => void;
 }
+/* eslint-enable no-unused-vars */
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 

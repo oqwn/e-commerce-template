@@ -8,7 +8,7 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Product, Category } from '@/types';
 import { api } from '@/services/api';
-import { useCart } from '@/contexts/useCart';
+// import { useCart } from '@/contexts/useCart'; // Will be used when cart functionality is implemented
 import AnimatedAddToCartButton from '@/components/ui/AnimatedAddToCartButton';
 
 const ProductListing: React.FC = () => {
@@ -23,7 +23,7 @@ const ProductListing: React.FC = () => {
     min: searchParams.get('min_price') || '',
     max: searchParams.get('max_price') || ''
   });
-  const { } = useCart();
+  // const { addToCart } = useCart(); // Will be used when cart functionality is implemented
 
   useEffect(() => {
     fetchProducts();

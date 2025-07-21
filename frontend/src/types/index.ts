@@ -46,6 +46,55 @@ export interface Product {
   discountPercentage?: number;
 }
 
+// Order types
+export interface Order {
+  id: number;
+  orderNumber: string;
+  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+  paymentStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+  totalAmount: number;
+  subtotalAmount: number;
+  taxAmount: number;
+  shippingAmount: number;
+  discountAmount?: number;
+  shippingAddress: Address;
+  billingAddress?: Address;
+  paymentMethod: string;
+  notes?: string;
+  estimatedDeliveryDate?: string;
+  deliveredAt?: string;
+  cancelledAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  items: OrderItem[];
+  payments?: Payment[];
+  totalItems: number;
+}
+
+export interface OrderItem {
+  id: number;
+  orderId: number;
+  productId: number;
+  productName: string;
+  productSlug: string;
+  productImageUrl?: string;
+  productSku: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  variantOptions?: string;
+}
+
+export interface Payment {
+  id: number;
+  orderId: number;
+  amount: number;
+  paymentMethod: string;
+  paymentStatus: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+  transactionId?: string;
+  createdAt: string;
+}
+
 export interface ProductImage {
   id: number;
   productId: number;
@@ -132,27 +181,6 @@ export interface Cart {
   totalPrice: number;
 }
 
-// Order types
-export interface Order {
-  id: number;
-  userId: number;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  totalAmount: number;
-  shippingAddress: Address;
-  items: OrderItem[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface OrderItem {
-  id: number;
-  orderId: number;
-  productId: number;
-  product: Product;
-  quantity: number;
-  price: number;
-  totalPrice: number;
-}
 
 // Address types
 export interface Address {

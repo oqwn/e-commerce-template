@@ -99,7 +99,7 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 - [x] 🔥 **M** Implement shopping cart backend APIs
 - [x] 🔥 **M** Build cart management frontend
 - [x] 🔥 **L** Create checkout flow with address selection
-- [ ] 🔥 **L** Implement payment integration (Stripe/PayPal)
+- [x] 🔥 **L** Implement payment integration (Stripe/PayPal)
 - [x] ⭐ **M** Add shipping calculation
 - [ ] ⭐ **M** Implement coupon and discount system
 - [ ] 📈 **M** Add saved payment methods

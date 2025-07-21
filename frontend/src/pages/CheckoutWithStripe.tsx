@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/useCart';
-import { useAuth } from '@/contexts/useAuth';
+// import { useAuth } from '@/contexts/useAuth'; // Will be used later for user validation
 import api from '@/services/api';
 import paymentService from '@/services/paymentService';
 import StripePaymentForm from '@/components/payment/StripePaymentForm';
@@ -66,7 +66,7 @@ const SHIPPING_METHODS: ShippingMethod[] = [
 const CheckoutWithStripe: React.FC = () => {
   const navigate = useNavigate();
   const { cart, clearCart } = useCart();
-  const { } = useAuth();
+  // const { user } = useAuth(); // Will be used for user validation later
   
   const [isLoading, setIsLoading] = useState(false);
   const [addresses, setAddresses] = useState<Address[]>([]);
