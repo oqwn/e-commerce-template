@@ -75,4 +75,22 @@ public class InventoryService {
         
         return stock;
     }
+    
+    @Transactional
+    public void reserveInventory(Long productId, Integer quantity, String notes) {
+        addInventoryTransaction(productId, null, "RESERVE", -quantity, "ORDER", null, notes);
+        log.info("Reserved {} units for product {}: {}", quantity, productId, notes);
+    }
+    
+    @Transactional
+    public void releaseReservedInventory(Long productId, Integer quantity, String notes) {
+        addInventoryTransaction(productId, null, "RELEASE", quantity, "ORDER", null, notes);
+        log.info("Released {} reserved units for product {}: {}", quantity, productId, notes);
+    }
+    
+    @Transactional
+    public void commitReservedInventory(Long productId, Integer quantity, String notes) {
+        addInventoryTransaction(productId, null, "COMMIT", -quantity, "ORDER", null, notes);
+        log.info("Committed {} reserved units for product {}: {}", quantity, productId, notes);
+    }
 }
