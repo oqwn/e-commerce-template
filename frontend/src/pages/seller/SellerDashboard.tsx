@@ -35,7 +35,7 @@ const SellerDashboard: React.FC = () => {
   const checkStore = async () => {
     try {
       const response = await api.get('/stores/my-store');
-      if (response.data.data) {
+      if (response.data) {
         setHasStore(true);
       } else {
         setHasStore(false);

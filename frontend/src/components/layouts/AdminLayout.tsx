@@ -39,7 +39,7 @@ const AdminLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
         <div
@@ -54,7 +54,7 @@ const AdminLayout: React.FC = () => {
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}
+        } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex lg:flex-col`}
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-700">
           <div className="flex items-center">
@@ -69,7 +69,7 @@ const AdminLayout: React.FC = () => {
           </button>
         </div>
 
-        <nav className="mt-6 px-3">
+        <nav className="mt-6 px-3 flex-1">
           <div className="space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
@@ -110,7 +110,7 @@ const AdminLayout: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top header */}
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8">
@@ -207,7 +207,7 @@ const AdminLayout: React.FC = () => {
         </div>
 
         {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-gray-100">
           <Outlet />
         </main>
       </div>
