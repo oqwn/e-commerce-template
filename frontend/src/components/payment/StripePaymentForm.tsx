@@ -5,6 +5,7 @@ import {
   useElements
 } from '@stripe/react-stripe-js';
 interface StripePaymentFormProps {
+  clientSecret?: string; // Optional for flexibility
   onSuccess: () => void;
   // eslint-disable-next-line no-unused-vars
   onError: (error: string) => void;

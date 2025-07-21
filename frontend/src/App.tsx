@@ -44,6 +44,8 @@ const OrderConfirmation = lazy(() => import('@/pages/OrderConfirmation'))
 const StoreRegistration = lazy(() => import('@/pages/seller/StoreRegistration'))
 const StoreManagement = lazy(() => import('@/pages/seller/StoreManagement'))
 const StoreAnalytics = lazy(() => import('@/pages/seller/StoreAnalytics'))
+const SellerOrders = lazy(() => import('@/pages/seller/SellerOrders'))
+const SellerOrderDetail = lazy(() => import('@/pages/seller/SellerOrderDetail'))
 
 function App() {
   return (
@@ -94,7 +96,8 @@ function App() {
             <Route path="store/register" element={<StoreRegistration />} />
             <Route path="store" element={<StoreManagement />} />
             <Route path="products" element={<div>Seller Products</div>} />
-            <Route path="orders" element={<div>Seller Orders</div>} />
+            <Route path="orders" element={<SellerOrders />} />
+            <Route path="orders/:orderId" element={<SellerOrderDetail />} />
             <Route path="analytics" element={<StoreAnalytics />} />
             <Route path="finance" element={<div>Finance</div>} />
             <Route path="account" element={<div>Account Settings</div>} />

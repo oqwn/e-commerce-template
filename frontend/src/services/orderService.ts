@@ -23,6 +23,36 @@ class OrderService {
   }
 
   /**
+   * Get seller's store orders with pagination and filtering
+   */
+  async getSellerOrders(page: number = 0, size: number = 10, status?: string, search?: string): Promise<Order[]> {
+    let url = `/orders/my-store-orders?page=${page}&size=${size}`;
+    if (status && status !== 'all') {
+      url += `&status=${status}`;
+    }
+    if (search) {
+      url += `&search=${search}`;
+    }
+    const response = await api.get(url);
+    return response.data.data || [];
+  }
+
+  /**
+   * Update order status (seller only)
+   */
+  async updateOrderStatus(orderId: number, status: string, notes?: string): Promise<void> {
+    await api.put(`/orders/${orderId}/status`, { status, notes });
+  }
+
+  /**
+   * Get orders count by status for seller
+   */
+  async getOrdersStats(): Promise<{ [key: string]: number }> {
+    const response = await api.get('/orders/my-store-stats');
+    return response.data.data || {};
+  }
+
+  /**
    * Get order by ID
    */
   async getOrderById(orderId: number): Promise<Order> {
