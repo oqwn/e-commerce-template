@@ -120,40 +120,53 @@ const StoreRegistration: React.FC = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {/* Progress Steps */}
           <nav className="mb-8" aria-label="Progress">
-            <ol className="flex items-center">
-              {steps.map((step, stepIdx) => (
-                <li key={step.id} className={`${stepIdx !== steps.length - 1 ? 'flex-1' : ''} relative`}>
-                  <div className={`flex items-center ${stepIdx !== 0 ? 'pl-4' : ''}`}>
+            <ol className="flex items-center justify-between relative">
+              {steps.map((step) => (
+                <li key={step.id} className="flex flex-col items-center z-10">
+                  <div className="flex flex-col items-center">
                     <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                      className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-200 ${
                         step.id === currentStep
-                          ? 'bg-green-600 text-white'
+                          ? 'bg-green-600 border-green-600 text-white'
                           : step.id < currentStep
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-200 text-gray-500'
+                          ? 'bg-green-600 border-green-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-400'
                       }`}
                     >
-                      <step.icon className="h-5 w-5" />
+                      <step.icon className="h-6 w-6" />
                     </div>
-                    <div className="ml-4">
+                    <div className="mt-3 text-center">
                       <p className={`text-sm font-medium ${
-                        step.id === currentStep ? 'text-green-600' : 'text-gray-500'
+                        step.id === currentStep 
+                          ? 'text-green-600' 
+                          : step.id < currentStep 
+                          ? 'text-green-600'
+                          : 'text-gray-500'
                       }`}>
                         {step.name}
                       </p>
                     </div>
                   </div>
-                  {stepIdx !== steps.length - 1 && (
-                    <div className="absolute top-5 left-10 -ml-px mt-0.5 h-0.5 w-full bg-gray-200">
-                      <div
-                        className={`h-full bg-green-600 transition-all duration-300 ${
-                          step.id < currentStep ? 'w-full' : 'w-0'
-                        }`}
-                      />
-                    </div>
-                  )}
                 </li>
               ))}
+              
+              {/* Connecting Lines */}
+              <div className="absolute top-6 left-0 right-0 flex items-center justify-between px-6">
+                <div className="flex-1 h-0.5 bg-gray-200 mx-6">
+                  <div
+                    className={`h-full bg-green-600 transition-all duration-500 ${
+                      currentStep > 1 ? 'w-full' : 'w-0'
+                    }`}
+                  />
+                </div>
+                <div className="flex-1 h-0.5 bg-gray-200 mx-6">
+                  <div
+                    className={`h-full bg-green-600 transition-all duration-500 ${
+                      currentStep > 2 ? 'w-full' : 'w-0'
+                    }`}
+                  />
+                </div>
+              </div>
             </ol>
           </nav>
 

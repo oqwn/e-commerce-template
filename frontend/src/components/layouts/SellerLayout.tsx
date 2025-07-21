@@ -30,13 +30,26 @@ const SellerLayout: React.FC = () => {
     { name: 'Account', href: '/seller/account', icon: Cog6ToothIcon },
   ];
 
+  const getCurrentPageTitle = () => {
+    const currentPath = location.pathname;
+    const currentNav = navigation.find(item => item.href === currentPath);
+    if (currentNav) return currentNav.name;
+    
+    // Handle sub-routes
+    if (currentPath.startsWith('/seller/store')) return 'Store Settings';
+    if (currentPath.startsWith('/seller/products')) return 'Products';
+    if (currentPath.startsWith('/seller/orders')) return 'Orders';
+    
+    return 'Seller Dashboard';
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
       {/* Mobile sidebar backdrop */}
       {isSidebarOpen && (
         <div
@@ -51,7 +64,7 @@ const SellerLayout: React.FC = () => {
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}
+        } transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:flex lg:flex-col`}
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <div className="flex items-center">
@@ -66,7 +79,7 @@ const SellerLayout: React.FC = () => {
           </button>
         </div>
 
-        <nav className="mt-6 px-3">
+        <nav className="mt-6 px-3 flex-1">
           <div className="space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
@@ -92,23 +105,10 @@ const SellerLayout: React.FC = () => {
             })}
           </div>
         </nav>
-
-        {/* Store Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-              <BuildingStorefrontIcon className="h-6 w-6 text-green-600" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">My Store</p>
-              <p className="text-xs text-gray-500">Active since 2024</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col lg:ml-0">
         {/* Top header */}
         <header className="bg-white shadow-sm border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8">
@@ -121,7 +121,7 @@ const SellerLayout: React.FC = () => {
                   <Bars3Icon className="h-6 w-6" />
                 </button>
                 <h1 className="text-xl font-semibold text-gray-900 ml-2 lg:ml-0">
-                  Seller Dashboard
+                  {getCurrentPageTitle()}
                 </h1>
               </div>
 
@@ -178,7 +178,7 @@ const SellerLayout: React.FC = () => {
         </header>
 
         {/* Page content */}
-        <main className="p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-gray-100">
           <Outlet />
         </main>
       </div>

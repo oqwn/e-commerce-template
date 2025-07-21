@@ -34,7 +34,7 @@ This document outlines the architecture for an open-source, modular e-commerce p
          ┌───────────────────────┼───────────────────────┐
          │                       │                       │
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   User Service  │    │ Product Service │    │  Order Service  │
+│   User Service  │    │ Product Service │    │ Store Service   │
 │   (Spring Boot) │    │ (Spring Boot)   │    │ (Spring Boot)   │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
          │                       │                       │
@@ -46,6 +46,18 @@ This document outlines the architecture for an open-source, modular e-commerce p
                     │     Redis)      │
                     └─────────────────┘
 ```
+
+### Security Configuration
+
+The platform uses Spring Security with the following endpoint authorization rules:
+
+- **Public endpoints**: `/auth/**`, `/health`, `/actuator/**`
+- **Store endpoints**: 
+  - GET `/stores/**` - Public access for browsing stores
+  - Other `/stores/**` - Authenticated access for store management
+- **Admin endpoints**: `/admin/**` - Admin role required
+- **Seller endpoints**: `/seller/**` - Seller or Admin role required  
+- **User endpoints**: `/users/**` - Authenticated users only
 
 ### Core Modules
 

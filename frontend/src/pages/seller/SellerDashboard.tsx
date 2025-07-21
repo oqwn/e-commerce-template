@@ -82,7 +82,7 @@ const SellerDashboard: React.FC = () => {
   // If no store, show store registration prompt
   if (hasStore === false) {
     return (
-      <div className="max-w-2xl mx-auto mt-16">
+      <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
           <BuildingStorefrontIcon className="h-16 w-16 text-green-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Your Store</h2>

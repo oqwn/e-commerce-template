@@ -23,6 +23,12 @@ This document provides a complete set of user stories for an open‑source e‑c
 - **Address Management** - Multiple addresses per user with default address support
 - **Database Migration System** - Flyway-based versioned database migrations
 
+#### **Store Management System**
+- **Store Registration** - Complete seller store creation and registration
+- **Store Authorization** - Fixed 403 Forbidden errors with proper endpoint security configuration
+- **Store CRUD Operations** - Full store management with seller-specific access controls
+- **Store Analytics** - Performance tracking and analytics for seller stores
+
 #### **Technical Infrastructure**
 - **Backend** - Spring Boot 3.4.5 with MyBatis, JWT authentication, role-based security
 - **Frontend** - React 18 with TypeScript, Vite, TailwindCSS, proper authentication context
