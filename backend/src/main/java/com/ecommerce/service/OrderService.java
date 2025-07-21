@@ -338,7 +338,7 @@ public class OrderService {
     
     private BigDecimal calculateTax(BigDecimal taxableAmount) {
         // Simple 8.5% tax calculation
-        return taxableAmount.multiply(BigDecimal.valueOf(0.085)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return taxableAmount.multiply(BigDecimal.valueOf(0.085)).setScale(2, java.math.RoundingMode.HALF_UP);
     }
     
     private String generateOrderNumber() {

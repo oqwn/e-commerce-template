@@ -25,8 +25,8 @@ public class CartItemResponse {
     
     public CartItemResponse(Long id, Long productId, String productName, String productSlug,
                            String productImageUrl, String storeName, Long storeId, Integer quantity,
-                           BigDecimal priceAtTime, BigDecimal totalPrice, Boolean inStock,
-                           Integer availableQuantity, LocalDateTime addedAt) {
+                           BigDecimal priceAtTime, BigDecimal totalPrice, Map<String, Object> selectedVariants,
+                           Boolean inStock, Integer availableQuantity, LocalDateTime addedAt) {
         this.id = id;
         this.productId = productId;
         this.productName = productName;
@@ -37,6 +37,7 @@ public class CartItemResponse {
         this.quantity = quantity;
         this.priceAtTime = priceAtTime;
         this.totalPrice = totalPrice;
+        this.selectedVariants = selectedVariants;
         this.inStock = inStock;
         this.availableQuantity = availableQuantity;
         this.addedAt = addedAt;

@@ -261,6 +261,7 @@ public class CartService {
             cartItem.getQuantity(),
             cartItem.getPriceAtTime(),
             cartItem.getTotalPrice(),
+            cartItem.getSelectedVariants(),
             product != null && product.getQuantity() > 0,
             product != null ? product.getQuantity() : 0,
             cartItem.getCreatedAt()
@@ -280,7 +281,7 @@ public class CartService {
     
     private BigDecimal calculateEstimatedTax(BigDecimal subtotal) {
         // Simple 8.5% tax calculation - this should be configurable
-        return subtotal.multiply(BigDecimal.valueOf(0.085)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        return subtotal.multiply(BigDecimal.valueOf(0.085)).setScale(2, java.math.RoundingMode.HALF_UP);
     }
     
     private BigDecimal calculateEstimatedShipping(BigDecimal subtotal) {

@@ -166,7 +166,7 @@ public class ProductDto {
         if (product.getPrice() != null && product.getCompareAtPrice() != null 
                 && product.getCompareAtPrice().compareTo(product.getPrice()) > 0) {
             BigDecimal discount = product.getCompareAtPrice().subtract(product.getPrice());
-            dto.setDiscountPercentage(discount.divide(product.getCompareAtPrice(), 2, BigDecimal.ROUND_HALF_UP)
+            dto.setDiscountPercentage(discount.divide(product.getCompareAtPrice(), 2, java.math.RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100)));
         }
         

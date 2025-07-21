@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.CartMapper">
+
+    <!-- Result Maps -->
+    <resultMap id="CartResultMap" type="com.ecommerce.model.Cart">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="sessionId" column="session_id"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="CartWithItemsResultMap" type="com.ecommerce.model.Cart" extends="CartResultMap">
+        <collection property="items" ofType="com.ecommerce.model.CartItem">
+            <id property="id" column="item_id"/>
+            <result property="cartId" column="cart_id"/>
+            <result property="productId" column="product_id"/>
+            <result property="quantity" column="quantity"/>
+            <result property="priceAtTime" column="price_at_time"/>
+            <result property="selectedVariants" column="selected_variants" typeHandler="com.ecommerce.handler.JsonTypeHandler"/>
+            <result property="createdAt" column="item_created_at"/>
+            <result property="updatedAt" column="item_updated_at"/>
+            <!-- Product information -->
+            <association property="product" javaType="com.ecommerce.model.Product">
+                <id property="id" column="product_id"/>
+                <result property="name" column="product_name"/>
+                <result property="price" column="product_price"/>
+                <result property="imageUrl" column="product_image_url"/>
+                <result property="status" column="product_status"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <resultMap id="CartItemResultMap" type="com.ecommerce.model.CartItem">
+        <id property="id" column="id"/>
+        <result property="cartId" column="cart_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="quantity" column="quantity"/>
+        <result property="priceAtTime" column="price_at_time"/>
+        <result property="selectedVariants" column="selected_variants" typeHandler="com.ecommerce.handler.JsonTypeHandler"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <resultMap id="CartItemWithProductResultMap" type="com.ecommerce.model.CartItem" extends="CartItemResultMap">
+        <association property="product" javaType="com.ecommerce.model.Product">
+            <id property="id" column="product_id"/>
+            <result property="name" column="product_name"/>
+            <result property="price" column="product_price"/>
+            <result property="imageUrl" column="product_image_url"/>
+            <result property="status" column="product_status"/>
+        </association>
+    </resultMap>
+
+    <!-- Cart CRUD Operations -->
+    <insert id="insertCart" parameterType="com.ecommerce.model.Cart" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO carts (user_id, session_id, expires_at, created_at, updated_at)
+        VALUES (#{userId}, #{sessionId}, #{expiresAt}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="updateCart" parameterType="com.ecommerce.model.Cart">
+        UPDATE carts 
+        SET user_id = #{userId},
+            session_id = #{sessionId},
+            expires_at = #{expiresAt},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteCartById">
+        DELETE FROM carts WHERE id = #{id}
+    </delete>
+
+    <select id="findCartById" resultMap="CartResultMap">
+        SELECT id, user_id, session_id, expires_at, created_at, updated_at
+        FROM carts
+        WHERE id = #{id}
+    </select>
+
+    <select id="findCartByUserId" resultMap="CartResultMap">
+        SELECT id, user_id, session_id, expires_at, created_at, updated_at
+        FROM carts
+        WHERE user_id = #{userId}
+        ORDER BY updated_at DESC
+        LIMIT 1
+    </select>
+
+    <select id="findCartBySessionId" resultMap="CartResultMap">
+        SELECT id, user_id, session_id, expires_at, created_at, updated_at
+        FROM carts
+        WHERE session_id = #{sessionId}
+        ORDER BY updated_at DESC
+        LIMIT 1
+    </select>
+
+    <select id="findCartWithItems" resultMap="CartWithItemsResultMap">
+        SELECT c.id, c.user_id, c.session_id, c.expires_at, c.created_at, c.updated_at,
+               ci.id AS item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time, 
+               ci.selected_variants, ci.created_at AS item_created_at, ci.updated_at AS item_updated_at,
+               p.name AS product_name, p.price AS product_price, p.image_url AS product_image_url, p.status AS product_status
+        FROM carts c
+        LEFT JOIN cart_items ci ON c.id = ci.cart_id
+        LEFT JOIN products p ON ci.product_id = p.id
+        WHERE c.id = #{id}
+        ORDER BY ci.created_at ASC
+    </select>
+
+    <select id="findCartByUserIdWithItems" resultMap="CartWithItemsResultMap">
+        SELECT c.id, c.user_id, c.session_id, c.expires_at, c.created_at, c.updated_at,
+               ci.id AS item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time, 
+               ci.selected_variants, ci.created_at AS item_created_at, ci.updated_at AS item_updated_at,
+               p.name AS product_name, p.price AS product_price, p.image_url AS product_image_url, p.status AS product_status
+        FROM carts c
+        LEFT JOIN cart_items ci ON c.id = ci.cart_id
+        LEFT JOIN products p ON ci.product_id = p.id
+        WHERE c.user_id = #{userId}
+        ORDER BY c.updated_at DESC, ci.created_at ASC
+        LIMIT 1
+    </select>
+
+    <select id="findCartBySessionIdWithItems" resultMap="CartWithItemsResultMap">
+        SELECT c.id, c.user_id, c.session_id, c.expires_at, c.created_at, c.updated_at,
+               ci.id AS item_id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time, 
+               ci.selected_variants, ci.created_at AS item_created_at, ci.updated_at AS item_updated_at,
+               p.name AS product_name, p.price AS product_price, p.image_url AS product_image_url, p.status AS product_status
+        FROM carts c
+        LEFT JOIN cart_items ci ON c.id = ci.cart_id
+        LEFT JOIN products p ON ci.product_id = p.id
+        WHERE c.session_id = #{sessionId}
+        ORDER BY c.updated_at DESC, ci.created_at ASC
+        LIMIT 1
+    </select>
+
+    <!-- Cart Item CRUD Operations -->
+    <insert id="insertCartItem" parameterType="com.ecommerce.model.CartItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cart_items (cart_id, product_id, quantity, price_at_time, selected_variants, created_at, updated_at)
+        VALUES (#{cartId}, #{productId}, #{quantity}, #{priceAtTime}, 
+                #{selectedVariants, typeHandler=com.ecommerce.handler.JsonTypeHandler}, 
+                #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="updateCartItem" parameterType="com.ecommerce.model.CartItem">
+        UPDATE cart_items 
+        SET quantity = #{quantity},
+            price_at_time = #{priceAtTime},
+            selected_variants = #{selectedVariants, typeHandler=com.ecommerce.handler.JsonTypeHandler},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteCartItemById">
+        DELETE FROM cart_items WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteCartItemsByCartId">
+        DELETE FROM cart_items WHERE cart_id = #{cartId}
+    </delete>
+
+    <select id="findCartItemById" resultMap="CartItemResultMap">
+        SELECT id, cart_id, product_id, quantity, price_at_time, selected_variants, created_at, updated_at
+        FROM cart_items
+        WHERE id = #{id}
+    </select>
+
+    <select id="findCartItemsByCartId" resultMap="CartItemResultMap">
+        SELECT id, cart_id, product_id, quantity, price_at_time, selected_variants, created_at, updated_at
+        FROM cart_items
+        WHERE cart_id = #{cartId}
+        ORDER BY created_at ASC
+    </select>
+
+    <select id="findCartItemsWithProductsByCartId" resultMap="CartItemWithProductResultMap">
+        SELECT ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.price_at_time, ci.selected_variants, 
+               ci.created_at, ci.updated_at,
+               p.name AS product_name, p.price AS product_price, p.image_url AS product_image_url, p.status AS product_status
+        FROM cart_items ci
+        JOIN products p ON ci.product_id = p.id
+        WHERE ci.cart_id = #{cartId}
+        ORDER BY ci.created_at ASC
+    </select>
+
+    <!-- Cart Item Specific Operations -->
+    <select id="findCartItemByCartAndProduct" resultMap="CartItemResultMap">
+        SELECT id, cart_id, product_id, quantity, price_at_time, selected_variants, created_at, updated_at
+        FROM cart_items
+        WHERE cart_id = #{cartId} AND product_id = #{productId}
+        LIMIT 1
+    </select>
+
+    <select id="findCartItemByCartProductAndVariants" resultMap="CartItemResultMap">
+        SELECT id, cart_id, product_id, quantity, price_at_time, selected_variants, created_at, updated_at
+        FROM cart_items
+        WHERE cart_id = #{cartId} 
+          AND product_id = #{productId}
+          AND (
+            (selected_variants IS NULL AND #{selectedVariantsJson} IS NULL)
+            OR selected_variants = #{selectedVariantsJson}
+          )
+        LIMIT 1
+    </select>
+
+    <update id="updateCartItemQuantity">
+        UPDATE cart_items 
+        SET quantity = #{quantity},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <!-- Cart Management -->
+    <update id="updateCartTimestamp">
+        UPDATE carts 
+        SET updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="clearExpiredCarts">
+        DELETE FROM carts 
+        WHERE expires_at IS NOT NULL 
+          AND expires_at &lt; #{expiredBefore}
+    </delete>
+
+    <!-- Cart Statistics -->
+    <select id="getCartItemCount" resultType="int">
+        SELECT COALESCE(SUM(quantity), 0)
+        FROM cart_items
+        WHERE cart_id = #{cartId}
+    </select>
+
+    <select id="getCartTotalPrice" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(quantity * price_at_time), 0.00)
+        FROM cart_items
+        WHERE cart_id = #{cartId}
+    </select>
+
+    <!-- Transfer Cart Operations -->
+    <update id="transferGuestCartToUser">
+        UPDATE carts 
+        SET user_id = #{userId},
+            session_id = NULL,
+            expires_at = NULL,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE session_id = #{sessionId}
+    </update>
+
+    <update id="mergeCartsOnLogin">
+        UPDATE cart_items 
+        SET cart_id = #{userCartId},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE cart_id = #{guestCartId}
+          AND NOT EXISTS (
+            SELECT 1 FROM cart_items ci2 
+            WHERE ci2.cart_id = #{userCartId} 
+              AND ci2.product_id = cart_items.product_id
+              AND (
+                (ci2.selected_variants IS NULL AND cart_items.selected_variants IS NULL)
+                OR ci2.selected_variants = cart_items.selected_variants
+              )
+          )
+    </update>
+
+    <!-- Check Existence -->
+    <select id="existsCartById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM carts WHERE id = #{id})
+    </select>
+
+    <select id="existsCartByUserId" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM carts WHERE user_id = #{userId})
+    </select>
+
+    <select id="existsCartBySessionId" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM carts WHERE session_id = #{sessionId})
+    </select>
+
+</mapper>
