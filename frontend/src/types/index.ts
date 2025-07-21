@@ -213,3 +213,100 @@ export interface CreateReviewRequest {
   title?: string;
   comment?: string;
 }
+
+// Store types
+export interface Store {
+  id: number;
+  sellerId: number;
+  storeName: string;
+  storeSlug: string;
+  description: string;
+  logoUrl?: string;
+  bannerUrl?: string;
+  businessName: string;
+  businessRegistrationNumber?: string;
+  taxId?: string;
+  contactEmail: string;
+  contactPhone: string;
+  supportEmail?: string;
+  supportPhone?: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  currency: string;
+  timezone: string;
+  isActive: boolean;
+  isVerified: boolean;
+  verificationStatus: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
+  verificationDate?: string;
+  returnPolicy?: string;
+  shippingPolicy?: string;
+  privacyPolicy?: string;
+  termsAndConditions?: string;
+  websiteUrl?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  twitterUrl?: string;
+  youtubeUrl?: string;
+  rating: number;
+  totalReviews: number;
+  totalProducts: number;
+  totalSales: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StoreCustomization {
+  id: number;
+  storeId: number;
+  themeName: string;
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  textColor: string;
+  layoutType: 'GRID' | 'LIST' | 'MASONRY';
+  productsPerPage: number;
+  showBanner: boolean;
+  showFeaturedProducts: boolean;
+  showCategories: boolean;
+  customCss?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StoreOperatingHours {
+  id: number;
+  storeId: number;
+  dayOfWeek: number; // 0=Sunday, 1=Monday, ..., 6=Saturday
+  openTime?: string;
+  closeTime?: string;
+  isClosed: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StoreAnalytics {
+  id: number;
+  storeId: number;
+  date: string;
+  totalVisits: number;
+  uniqueVisitors: number;
+  pageViews: number;
+  bounceRate: number;
+  avgSessionDuration: number;
+  totalOrders: number;
+  totalRevenue: number;
+  avgOrderValue: number;
+  conversionRate: number;
+  productsViewed: number;
+  productsAddedToCart: number;
+  productsPurchased: number;
+  createdAt: string;
+  updatedAt: string;
+}

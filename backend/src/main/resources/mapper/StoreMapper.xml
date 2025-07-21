@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.StoreMapper">
+
+    <!-- Result Maps -->
+    <resultMap id="BaseResultMap" type="com.ecommerce.model.Store">
+        <id column="id" property="id" />
+        <result column="seller_id" property="sellerId" />
+        <result column="store_name" property="storeName" />
+        <result column="store_slug" property="storeSlug" />
+        <result column="description" property="description" />
+        <result column="logo_url" property="logoUrl" />
+        <result column="banner_url" property="bannerUrl" />
+        <result column="business_name" property="businessName" />
+        <result column="business_registration_number" property="businessRegistrationNumber" />
+        <result column="tax_id" property="taxId" />
+        <result column="contact_email" property="contactEmail" />
+        <result column="contact_phone" property="contactPhone" />
+        <result column="support_email" property="supportEmail" />
+        <result column="support_phone" property="supportPhone" />
+        <result column="street" property="street" />
+        <result column="city" property="city" />
+        <result column="state" property="state" />
+        <result column="postal_code" property="postalCode" />
+        <result column="country" property="country" />
+        <result column="currency" property="currency" />
+        <result column="timezone" property="timezone" />
+        <result column="is_active" property="isActive" />
+        <result column="is_verified" property="isVerified" />
+        <result column="verification_status" property="verificationStatus" />
+        <result column="verification_date" property="verificationDate" />
+        <result column="return_policy" property="returnPolicy" />
+        <result column="shipping_policy" property="shippingPolicy" />
+        <result column="privacy_policy" property="privacyPolicy" />
+        <result column="terms_and_conditions" property="termsAndConditions" />
+        <result column="website_url" property="websiteUrl" />
+        <result column="facebook_url" property="facebookUrl" />
+        <result column="instagram_url" property="instagramUrl" />
+        <result column="twitter_url" property="twitterUrl" />
+        <result column="youtube_url" property="youtubeUrl" />
+        <result column="rating" property="rating" />
+        <result column="total_reviews" property="totalReviews" />
+        <result column="total_products" property="totalProducts" />
+        <result column="total_sales" property="totalSales" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <resultMap id="StoreWithDetailsResultMap" type="com.ecommerce.model.Store" extends="BaseResultMap">
+        <association property="seller" javaType="com.ecommerce.model.User">
+            <id column="seller_user_id" property="id" />
+            <result column="seller_email" property="email" />
+            <result column="seller_first_name" property="firstName" />
+            <result column="seller_last_name" property="lastName" />
+            <result column="seller_phone" property="phone" />
+        </association>
+        <association property="customization" javaType="com.ecommerce.model.StoreCustomization">
+            <id column="custom_id" property="id" />
+            <result column="custom_theme_name" property="themeName" />
+            <result column="custom_primary_color" property="primaryColor" />
+            <result column="custom_secondary_color" property="secondaryColor" />
+            <result column="custom_accent_color" property="accentColor" />
+            <result column="custom_background_color" property="backgroundColor" />
+            <result column="custom_text_color" property="textColor" />
+            <result column="custom_layout_type" property="layoutType" />
+            <result column="custom_products_per_page" property="productsPerPage" />
+            <result column="custom_show_banner" property="showBanner" />
+            <result column="custom_show_featured_products" property="showFeaturedProducts" />
+            <result column="custom_show_categories" property="showCategories" />
+        </association>
+        <collection property="operatingHours" ofType="com.ecommerce.model.StoreOperatingHours">
+            <id column="hours_id" property="id" />
+            <result column="hours_day_of_week" property="dayOfWeek" />
+            <result column="hours_open_time" property="openTime" />
+            <result column="hours_close_time" property="closeTime" />
+            <result column="hours_is_closed" property="isClosed" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="CustomizationResultMap" type="com.ecommerce.model.StoreCustomization">
+        <id column="id" property="id" />
+        <result column="store_id" property="storeId" />
+        <result column="theme_name" property="themeName" />
+        <result column="primary_color" property="primaryColor" />
+        <result column="secondary_color" property="secondaryColor" />
+        <result column="accent_color" property="accentColor" />
+        <result column="background_color" property="backgroundColor" />
+        <result column="text_color" property="textColor" />
+        <result column="layout_type" property="layoutType" />
+        <result column="products_per_page" property="productsPerPage" />
+        <result column="show_banner" property="showBanner" />
+        <result column="show_featured_products" property="showFeaturedProducts" />
+        <result column="show_categories" property="showCategories" />
+        <result column="custom_css" property="customCss" />
+        <result column="meta_title" property="metaTitle" />
+        <result column="meta_description" property="metaDescription" />
+        <result column="meta_keywords" property="metaKeywords" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <resultMap id="OperatingHoursResultMap" type="com.ecommerce.model.StoreOperatingHours">
+        <id column="id" property="id" />
+        <result column="store_id" property="storeId" />
+        <result column="day_of_week" property="dayOfWeek" />
+        <result column="open_time" property="openTime" />
+        <result column="close_time" property="closeTime" />
+        <result column="is_closed" property="isClosed" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <resultMap id="AnalyticsResultMap" type="com.ecommerce.model.StoreAnalytics">
+        <id column="id" property="id" />
+        <result column="store_id" property="storeId" />
+        <result column="date" property="date" />
+        <result column="total_visits" property="totalVisits" />
+        <result column="unique_visitors" property="uniqueVisitors" />
+        <result column="page_views" property="pageViews" />
+        <result column="bounce_rate" property="bounceRate" />
+        <result column="avg_session_duration" property="avgSessionDuration" />
+        <result column="total_orders" property="totalOrders" />
+        <result column="total_revenue" property="totalRevenue" />
+        <result column="avg_order_value" property="avgOrderValue" />
+        <result column="conversion_rate" property="conversionRate" />
+        <result column="products_viewed" property="productsViewed" />
+        <result column="products_added_to_cart" property="productsAddedToCart" />
+        <result column="products_purchased" property="productsPurchased" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- SQL Fragments -->
+    <sql id="Base_Column_List">
+        id, seller_id, store_name, store_slug, description, logo_url, banner_url,
+        business_name, business_registration_number, tax_id,
+        contact_email, contact_phone, support_email, support_phone,
+        street, city, state, postal_code, country,
+        currency, timezone, is_active, is_verified, verification_status, verification_date,
+        return_policy, shipping_policy, privacy_policy, terms_and_conditions,
+        website_url, facebook_url, instagram_url, twitter_url, youtube_url,
+        rating, total_reviews, total_products, total_sales,
+        created_at, updated_at
+    </sql>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.ecommerce.model.Store" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO stores (
+            seller_id, store_name, store_slug, description, logo_url, banner_url,
+            business_name, business_registration_number, tax_id,
+            contact_email, contact_phone, support_email, support_phone,
+            street, city, state, postal_code, country,
+            currency, timezone, is_active, is_verified, verification_status,
+            return_policy, shipping_policy, privacy_policy, terms_and_conditions,
+            website_url, facebook_url, instagram_url, twitter_url, youtube_url,
+            created_at, updated_at
+        ) VALUES (
+            #{sellerId}, #{storeName}, #{storeSlug}, #{description}, #{logoUrl}, #{bannerUrl},
+            #{businessName}, #{businessRegistrationNumber}, #{taxId},
+            #{contactEmail}, #{contactPhone}, #{supportEmail}, #{supportPhone},
+            #{street}, #{city}, #{state}, #{postalCode}, #{country},
+            #{currency}, #{timezone}, #{isActive}, #{isVerified}, #{verificationStatus},
+            #{returnPolicy}, #{shippingPolicy}, #{privacyPolicy}, #{termsAndConditions},
+            #{websiteUrl}, #{facebookUrl}, #{instagramUrl}, #{twitterUrl}, #{youtubeUrl},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.ecommerce.model.Store">
+        UPDATE stores SET
+            store_name = #{storeName},
+            description = #{description},
+            logo_url = #{logoUrl},
+            banner_url = #{bannerUrl},
+            business_name = #{businessName},
+            business_registration_number = #{businessRegistrationNumber},
+            tax_id = #{taxId},
+            contact_email = #{contactEmail},
+            contact_phone = #{contactPhone},
+            support_email = #{supportEmail},
+            support_phone = #{supportPhone},
+            street = #{street},
+            city = #{city},
+            state = #{state},
+            postal_code = #{postalCode},
+            country = #{country},
+            currency = #{currency},
+            timezone = #{timezone},
+            return_policy = #{returnPolicy},
+            shipping_policy = #{shippingPolicy},
+            privacy_policy = #{privacyPolicy},
+            terms_and_conditions = #{termsAndConditions},
+            website_url = #{websiteUrl},
+            facebook_url = #{facebookUrl},
+            instagram_url = #{instagramUrl},
+            twitter_url = #{twitterUrl},
+            youtube_url = #{youtubeUrl},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM stores WHERE id = #{id}
+    </delete>
+
+    <!-- Find by ID -->
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE id = #{id}
+    </select>
+
+    <!-- Find by ID with details -->
+    <select id="findByIdWithDetails" parameterType="java.lang.Long" resultMap="StoreWithDetailsResultMap">
+        SELECT 
+            s.*,
+            u.id as seller_user_id, u.email as seller_email, 
+            u.first_name as seller_first_name, u.last_name as seller_last_name, u.phone as seller_phone,
+            c.id as custom_id, c.theme_name as custom_theme_name,
+            c.primary_color as custom_primary_color, c.secondary_color as custom_secondary_color,
+            c.accent_color as custom_accent_color, c.background_color as custom_background_color,
+            c.text_color as custom_text_color, c.layout_type as custom_layout_type,
+            c.products_per_page as custom_products_per_page, c.show_banner as custom_show_banner,
+            c.show_featured_products as custom_show_featured_products, c.show_categories as custom_show_categories,
+            oh.id as hours_id, oh.day_of_week as hours_day_of_week,
+            oh.open_time as hours_open_time, oh.close_time as hours_close_time,
+            oh.is_closed as hours_is_closed
+        FROM stores s
+        LEFT JOIN users u ON s.seller_id = u.id
+        LEFT JOIN store_customization c ON s.id = c.store_id
+        LEFT JOIN store_operating_hours oh ON s.id = oh.store_id
+        WHERE s.id = #{id}
+        ORDER BY oh.day_of_week
+    </select>
+
+    <!-- Find by seller ID -->
+    <select id="findBySellerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE seller_id = #{sellerId}
+    </select>
+
+    <!-- Find by slug -->
+    <select id="findBySlug" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE store_slug = #{slug}
+    </select>
+
+    <!-- Find all -->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Update status -->
+    <update id="updateStatus">
+        UPDATE stores SET
+            is_active = #{isActive},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- Update verification status -->
+    <update id="updateVerificationStatus">
+        UPDATE stores SET
+            verification_status = #{status},
+            is_verified = CASE WHEN #{status} = 'APPROVED' THEN 1 ELSE 0 END,
+            verification_date = #{verificationDate},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- Update metrics -->
+    <update id="updateMetrics">
+        UPDATE stores SET
+            rating = #{rating},
+            total_reviews = #{totalReviews},
+            total_products = #{totalProducts},
+            total_sales = #{totalSales},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- Find active stores -->
+    <select id="findActiveStores" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE is_active = 1
+        ORDER BY rating DESC, total_reviews DESC
+    </select>
+
+    <!-- Find verified stores -->
+    <select id="findVerifiedStores" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE is_verified = 1 AND is_active = 1
+        ORDER BY rating DESC, total_reviews DESC
+    </select>
+
+    <!-- Find by category -->
+    <select id="findByCategory" resultMap="BaseResultMap">
+        SELECT DISTINCT s.*
+        FROM stores s
+        INNER JOIN store_categories sc ON s.id = sc.store_id
+        WHERE sc.category_id = #{categoryId} AND s.is_active = 1
+        ORDER BY s.rating DESC, s.total_reviews DESC
+    </select>
+
+    <!-- Search by name -->
+    <select id="searchByName" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE (LOWER(store_name) LIKE LOWER(CONCAT('%', #{searchTerm}, '%'))
+        OR LOWER(description) LIKE LOWER(CONCAT('%', #{searchTerm}, '%')))
+        AND is_active = 1
+        ORDER BY rating DESC, total_reviews DESC
+    </select>
+
+    <!-- Find top rated stores -->
+    <select id="findTopRatedStores" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM stores
+        WHERE is_active = 1 AND is_verified = 1 AND total_reviews >= 10
+        ORDER BY rating DESC, total_reviews DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- Customization operations -->
+    <insert id="insertCustomization" parameterType="com.ecommerce.model.StoreCustomization" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO store_customization (
+            store_id, theme_name, primary_color, secondary_color, accent_color,
+            background_color, text_color, layout_type, products_per_page,
+            show_banner, show_featured_products, show_categories,
+            custom_css, meta_title, meta_description, meta_keywords,
+            created_at, updated_at
+        ) VALUES (
+            #{storeId}, #{themeName}, #{primaryColor}, #{secondaryColor}, #{accentColor},
+            #{backgroundColor}, #{textColor}, #{layoutType}, #{productsPerPage},
+            #{showBanner}, #{showFeaturedProducts}, #{showCategories},
+            #{customCss}, #{metaTitle}, #{metaDescription}, #{metaKeywords},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateCustomization" parameterType="com.ecommerce.model.StoreCustomization">
+        UPDATE store_customization SET
+            theme_name = #{themeName},
+            primary_color = #{primaryColor},
+            secondary_color = #{secondaryColor},
+            accent_color = #{accentColor},
+            background_color = #{backgroundColor},
+            text_color = #{textColor},
+            layout_type = #{layoutType},
+            products_per_page = #{productsPerPage},
+            show_banner = #{showBanner},
+            show_featured_products = #{showFeaturedProducts},
+            show_categories = #{showCategories},
+            custom_css = #{customCss},
+            meta_title = #{metaTitle},
+            meta_description = #{metaDescription},
+            meta_keywords = #{metaKeywords},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="findCustomizationByStoreId" parameterType="java.lang.Long" resultMap="CustomizationResultMap">
+        SELECT * FROM store_customization WHERE store_id = #{storeId}
+    </select>
+
+    <!-- Operating hours operations -->
+    <insert id="insertOperatingHours" parameterType="com.ecommerce.model.StoreOperatingHours" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO store_operating_hours (
+            store_id, day_of_week, open_time, close_time, is_closed,
+            created_at, updated_at
+        ) VALUES (
+            #{storeId}, #{dayOfWeek}, #{openTime}, #{closeTime}, #{isClosed},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateOperatingHours" parameterType="com.ecommerce.model.StoreOperatingHours">
+        UPDATE store_operating_hours SET
+            open_time = #{openTime},
+            close_time = #{closeTime},
+            is_closed = #{isClosed},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteOperatingHours" parameterType="java.lang.Long">
+        DELETE FROM store_operating_hours WHERE id = #{id}
+    </delete>
+
+    <select id="findOperatingHoursByStoreId" parameterType="java.lang.Long" resultMap="OperatingHoursResultMap">
+        SELECT * FROM store_operating_hours 
+        WHERE store_id = #{storeId}
+        ORDER BY day_of_week
+    </select>
+
+    <!-- Analytics operations -->
+    <insert id="insertAnalytics" parameterType="com.ecommerce.model.StoreAnalytics" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO store_analytics (
+            store_id, date, total_visits, unique_visitors, page_views,
+            bounce_rate, avg_session_duration, total_orders, total_revenue,
+            avg_order_value, conversion_rate, products_viewed,
+            products_added_to_cart, products_purchased,
+            created_at, updated_at
+        ) VALUES (
+            #{storeId}, #{date}, #{totalVisits}, #{uniqueVisitors}, #{pageViews},
+            #{bounceRate}, #{avgSessionDuration}, #{totalOrders}, #{totalRevenue},
+            #{avgOrderValue}, #{conversionRate}, #{productsViewed},
+            #{productsAddedToCart}, #{productsPurchased},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateAnalytics" parameterType="com.ecommerce.model.StoreAnalytics">
+        UPDATE store_analytics SET
+            total_visits = #{totalVisits},
+            unique_visitors = #{uniqueVisitors},
+            page_views = #{pageViews},
+            bounce_rate = #{bounceRate},
+            avg_session_duration = #{avgSessionDuration},
+            total_orders = #{totalOrders},
+            total_revenue = #{totalRevenue},
+            avg_order_value = #{avgOrderValue},
+            conversion_rate = #{conversionRate},
+            products_viewed = #{productsViewed},
+            products_added_to_cart = #{productsAddedToCart},
+            products_purchased = #{productsPurchased},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="findAnalyticsByStoreAndDate" resultMap="AnalyticsResultMap">
+        SELECT * FROM store_analytics 
+        WHERE store_id = #{storeId} AND date = #{date}
+    </select>
+
+    <select id="findAnalyticsByStoreAndDateRange" resultMap="AnalyticsResultMap">
+        SELECT * FROM store_analytics 
+        WHERE store_id = #{storeId} 
+        AND date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY date DESC
+    </select>
+
+    <!-- Statistics -->
+    <select id="countAll" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM stores
+    </select>
+
+    <select id="countActive" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM stores WHERE is_active = 1
+    </select>
+
+    <select id="countVerified" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM stores WHERE is_verified = 1
+    </select>
+
+    <select id="countByVerificationStatus" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM stores WHERE verification_status = #{status}
+    </select>
+
+    <!-- Check existence -->
+    <select id="existsBySlug" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM stores WHERE store_slug = #{slug}
+    </select>
+
+    <select id="existsBySellerId" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM stores WHERE seller_id = #{sellerId}
+    </select>
+
+</mapper>

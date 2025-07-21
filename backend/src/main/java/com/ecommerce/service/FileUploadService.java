@@ -58,6 +58,10 @@ public class FileUploadService {
     public String uploadProductImage(MultipartFile file) throws IOException {
         return uploadFile(file, "products");
     }
+    
+    public String uploadStoreImage(MultipartFile file) throws IOException {
+        return uploadFile(file, "stores");
+    }
 
     private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {

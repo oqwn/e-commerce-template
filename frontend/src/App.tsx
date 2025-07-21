@@ -32,6 +32,11 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 // Buyer pages
 const ProductListing = lazy(() => import('@/pages/buyer/ProductListing'))
 
+// Seller pages
+const StoreRegistration = lazy(() => import('@/pages/seller/StoreRegistration'))
+const StoreManagement = lazy(() => import('@/pages/seller/StoreManagement'))
+const StoreAnalytics = lazy(() => import('@/pages/seller/StoreAnalytics'))
+
 function App() {
   return (
     <AuthProvider>
@@ -71,11 +76,12 @@ function App() {
             </RoleBasedRouter>
           }>
             <Route index element={<SellerDashboard />} />
+            <Route path="store/register" element={<StoreRegistration />} />
+            <Route path="store" element={<StoreManagement />} />
             <Route path="products" element={<div>Seller Products</div>} />
             <Route path="orders" element={<div>Seller Orders</div>} />
-            <Route path="analytics" element={<div>Analytics</div>} />
+            <Route path="analytics" element={<StoreAnalytics />} />
             <Route path="finance" element={<div>Finance</div>} />
-            <Route path="store" element={<div>Store Settings</div>} />
             <Route path="account" element={<div>Account Settings</div>} />
             <Route path="profile" element={<Profile />} />
           </Route>

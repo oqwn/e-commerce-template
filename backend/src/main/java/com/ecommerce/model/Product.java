@@ -18,6 +18,7 @@ import java.util.List;
 public class Product {
     private Long id;
     private Long sellerId;
+    private Long storeId;
     private Long categoryId;
     private String name;
     private String slug;
@@ -39,6 +40,7 @@ public class Product {
     
     // Related entities
     private User seller;
+    private Store store;
     private Category category;
     private List<ProductImage> images;
     private List<String> tags;

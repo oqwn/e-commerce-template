@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { api } from '@/services/api';
 import {
   CurrencyDollarIcon,
   ShoppingBagIcon,
@@ -8,6 +9,7 @@ import {
   ArrowUpIcon,
   EyeIcon,
   PlusIcon,
+  BuildingStorefrontIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardStats {
@@ -22,6 +24,29 @@ interface DashboardStats {
 }
 
 const SellerDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const [hasStore, setHasStore] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    checkStore();
+  }, []);
+
+  const checkStore = async () => {
+    try {
+      const response = await api.get('/stores/my-store');
+      if (response.data.data) {
+        setHasStore(true);
+      } else {
+        setHasStore(false);
+      }
+    } catch (error) {
+      setHasStore(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const [stats] = useState<DashboardStats>({
     totalRevenue: 12450.50,
     totalProducts: 24,
@@ -46,6 +71,36 @@ const SellerDashboard: React.FC = () => {
     { name: 'Wireless Mouse', sold: 45, revenue: 1349.55 },
   ]);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  // If no store, show store registration prompt
+  if (hasStore === false) {
+    return (
+      <div className="max-w-2xl mx-auto mt-16">
+        <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+          <BuildingStorefrontIcon className="h-16 w-16 text-green-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Create Your Store</h2>
+          <p className="text-gray-600 mb-6">
+            You need to set up your store before you can start selling products.
+          </p>
+          <button
+            onClick={() => navigate('/seller/store/register')}
+            className="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <BuildingStorefrontIcon className="h-5 w-5 mr-2" />
+            Create Store Now
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -55,13 +110,22 @@ const SellerDashboard: React.FC = () => {
             <h1 className="text-2xl font-bold text-gray-900">Welcome back!</h1>
             <p className="text-gray-600 mt-1">Here's what's happening with your store today.</p>
           </div>
-          <Link
-            to="/seller/products/new"
-            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <PlusIcon className="h-5 w-5 mr-2" />
-            Add Product
-          </Link>
+          <div className="flex space-x-3">
+            <Link
+              to="/seller/store"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <BuildingStorefrontIcon className="h-5 w-5 mr-2" />
+              Manage Store
+            </Link>
+            <Link
+              to="/seller/products/new"
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Add Product
+            </Link>
+          </div>
         </div>
       </div>
 
