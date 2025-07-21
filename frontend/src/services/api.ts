@@ -16,8 +16,10 @@ export const api = {
       'Content-Type': 'application/json',
     };
     
-    if (authToken) {
-      headers['Authorization'] = `Bearer ${authToken}`;
+    // Use explicit authToken first, fallback to localStorage
+    const token = authToken || localStorage.getItem('accessToken');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
     
     return headers;

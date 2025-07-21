@@ -64,6 +64,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               createdAt: payload.createdAt || new Date().toISOString(),
             });
             setIsAuthenticated(true);
+            // Set the auth token for API requests
+            api.setAuthToken(token);
           } else {
             // Token expired, try to refresh
             await refreshToken();
