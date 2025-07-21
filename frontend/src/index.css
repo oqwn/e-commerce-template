@@ -92,4 +92,31 @@
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-500 dark:bg-gray-500;
   }
+
+  /* Add to Cart Animation */
+  .add-to-cart-animation {
+    @apply pointer-events-none;
+  }
+
+  /* Cart bounce animation */
+  @keyframes cart-bounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  .cart-bounce {
+    animation: cart-bounce 0.3s ease-in-out;
+  }
+
+  /* Success pulse animation */
+  @keyframes success-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .success-pulse {
+    animation: success-pulse 0.4s ease-in-out;
+  }
 }

@@ -66,7 +66,7 @@ public class CartService {
     
     public CartResponse addToCart(Long userId, String sessionId, AddToCartRequest request) {
         // Validate product exists and is active
-        Product product = productMapper.findById(request.getProductId());
+        Product product = productMapper.findByIdWithStats(request.getProductId());
         if (product == null) {
             throw new RuntimeException("Product not found");
         }
@@ -75,8 +75,9 @@ public class CartService {
         }
         
         // Check inventory
-        if (product.getQuantity() < request.getQuantity()) {
-            throw new RuntimeException("Insufficient stock. Available: " + product.getQuantity());
+        Integer availableQuantity = product.getQuantity();
+        if (availableQuantity != null && availableQuantity < request.getQuantity()) {
+            throw new RuntimeException("Insufficient stock. Available: " + availableQuantity);
         }
         
         Cart cart = getOrCreateCartEntity(userId, sessionId);
@@ -93,8 +94,8 @@ public class CartService {
             int newQuantity = item.getQuantity() + request.getQuantity();
             
             // Check inventory for new quantity
-            if (product.getQuantity() < newQuantity) {
-                throw new RuntimeException("Insufficient stock for requested quantity. Available: " + product.getQuantity());
+            if (availableQuantity != null && availableQuantity < newQuantity) {
+                throw new RuntimeException("Insufficient stock for requested quantity. Available: " + availableQuantity);
             }
             
             item.setQuantity(newQuantity);
@@ -137,10 +138,11 @@ public class CartService {
             cartMapper.deleteCartItemById(cartItemId);
         } else {
             // Validate inventory
-            Product product = productMapper.findById(cartItem.getProductId());
+            Product product = productMapper.findByIdWithStats(cartItem.getProductId());
             if (product != null) {
-                if (product.getQuantity() < request.getQuantity()) {
-                    throw new RuntimeException("Insufficient stock. Available: " + product.getQuantity());
+                Integer availableQuantity = product.getQuantity();
+                if (availableQuantity != null && availableQuantity < request.getQuantity()) {
+                    throw new RuntimeException("Insufficient stock. Available: " + availableQuantity);
                 }
             }
             
@@ -255,15 +257,15 @@ public class CartService {
             cartItem.getProductId(),
             product != null ? product.getName() : "Unknown Product",
             product != null ? product.getSlug() : "",
-            product != null && !product.getImages().isEmpty() ? product.getImages().get(0).getImageUrl() : null,
+            product != null && product.getImages() != null && !product.getImages().isEmpty() ? product.getImages().get(0).getImageUrl() : null,
             product != null && product.getStore() != null ? product.getStore().getStoreName() : "Unknown Store",
             product != null ? product.getStoreId() : null,
             cartItem.getQuantity(),
             cartItem.getPriceAtTime(),
             cartItem.getTotalPrice(),
-            cartItem.getSelectedVariants(),
-            product != null && product.getQuantity() > 0,
-            product != null ? product.getQuantity() : 0,
+            null, // cartItem.getSelectedVariants(), // TODO: Fix JSON handling
+            product != null && product.getQuantity() != null && product.getQuantity() > 0,
+            product != null && product.getQuantity() != null ? product.getQuantity() : 0,
             cartItem.getCreatedAt()
         );
     }

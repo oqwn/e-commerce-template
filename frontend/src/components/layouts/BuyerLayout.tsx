@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/useAuth';
 import { useCart } from '@/contexts/useCart';
@@ -17,6 +17,7 @@ const BuyerLayout: React.FC = () => {
   const { cartItemCount } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const navigation = [
     { name: 'Home', href: '/buyer', icon: HomeIcon },
@@ -53,8 +54,16 @@ const BuyerLayout: React.FC = () => {
                 </div>
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Search products..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      navigate(`/buyer/products?q=${encodeURIComponent(searchQuery.trim())}`);
+                      setSearchQuery(''); // Clear after search
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -64,6 +73,7 @@ const BuyerLayout: React.FC = () => {
               <Link
                 to="/buyer/cart"
                 className="p-2 text-gray-400 hover:text-gray-500 relative"
+                data-cart-icon
               >
                 <ShoppingCartIcon className="h-6 w-6" />
                 {cartItemCount > 0 && (

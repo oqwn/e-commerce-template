@@ -38,6 +38,7 @@ const Cart = lazy(() => import('@/pages/Cart'))
 const Checkout = lazy(() => import('@/pages/Checkout'))
 const OrderConfirmation = lazy(() => import('@/pages/OrderConfirmation'))
 
+
 // Seller pages
 const StoreRegistration = lazy(() => import('@/pages/seller/StoreRegistration'))
 const StoreManagement = lazy(() => import('@/pages/seller/StoreManagement'))
@@ -64,6 +65,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+          
 
           {/* Buyer Routes */}
           <Route path="/buyer/*" element={

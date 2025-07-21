@@ -10,6 +10,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Product, Category } from '@/types';
 import { api } from '@/services/api';
 import { useCart } from '@/contexts/useCart';
+import AnimatedAddToCartButton from '@/components/ui/AnimatedAddToCartButton';
 
 const ProductListing: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,7 +25,6 @@ const ProductListing: React.FC = () => {
     max: searchParams.get('max_price') || ''
   });
   const { addToCart } = useCart();
-  const [addingToCart, setAddingToCart] = useState<number | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -114,16 +114,6 @@ const ProductListing: React.FC = () => {
     return stars;
   };
 
-  const handleAddToCart = async (productId: number) => {
-    try {
-      setAddingToCart(productId);
-      await addToCart(productId, 1);
-    } catch (error) {
-      // Error handling is done in CartContext
-    } finally {
-      setAddingToCart(null);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -142,24 +132,10 @@ const ProductListing: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Search and Filter Header */}
+      {/* Filter Header */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <form onSubmit={handleSearch} className="space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-4 lg:space-y-0">
-            {/* Search Input */}
-            <div className="flex-1">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
             {/* Category Filter */}
             <div className="lg:w-48">
               <select
@@ -190,32 +166,32 @@ const ProductListing: React.FC = () => {
               </select>
             </div>
 
+            {/* Price Range */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">Price:</span>
+              <input
+                type="number"
+                value={priceRange.min}
+                onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                placeholder="Min"
+                className="w-24 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <span className="text-gray-400">-</span>
+              <input
+                type="number"
+                value={priceRange.max}
+                onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                placeholder="Max"
+                className="w-24 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
             <button
               type="submit"
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Search
+              Apply Filters
             </button>
-          </div>
-
-          {/* Price Range */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Price Range:</span>
-            <input
-              type="number"
-              value={priceRange.min}
-              onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-              placeholder="Min"
-              className="w-24 px-3 py-1 text-sm border border-gray-300 rounded"
-            />
-            <span className="text-gray-400">-</span>
-            <input
-              type="number"
-              value={priceRange.max}
-              onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-              placeholder="Max"
-              className="w-24 px-3 py-1 text-sm border border-gray-300 rounded"
-            />
           </div>
         </form>
       </div>
@@ -296,26 +272,14 @@ const ProductListing: React.FC = () => {
               </div>
 
               {/* Add to Cart Button */}
-              <button 
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleAddToCart(product.id);
-                }}
-                disabled={addingToCart === product.id}
-                className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {addingToCart === product.id ? (
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                ) : (
-                  <>
-                    <ShoppingCartIcon className="h-5 w-5 mr-2" />
-                    Add to Cart
-                  </>
-                )}
-              </button>
+              <AnimatedAddToCartButton
+                productId={product.id}
+                productName={product.name}
+                productImageUrl={product.images?.[0]?.imageUrl}
+                className="w-full"
+                variant="primary"
+                size="md"
+              />
             </div>
           </div>
         ))}
