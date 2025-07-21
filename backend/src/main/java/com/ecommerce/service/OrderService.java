@@ -8,6 +8,7 @@ import com.ecommerce.mapper.CartMapper;
 import com.ecommerce.mapper.ProductMapper;
 import com.ecommerce.mapper.AddressMapper;
 import com.ecommerce.model.*;
+import com.ecommerce.service.CouponService.CouponValidationResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +28,17 @@ public class OrderService {
     private final ProductMapper productMapper;
     private final AddressMapper addressMapper;
     private final InventoryService inventoryService;
+    private final CouponService couponService;
     
     public OrderService(OrderMapper orderMapper, CartMapper cartMapper, ProductMapper productMapper,
-                       AddressMapper addressMapper, InventoryService inventoryService) {
+                       AddressMapper addressMapper, InventoryService inventoryService,
+                       CouponService couponService) {
         this.orderMapper = orderMapper;
         this.cartMapper = cartMapper;
         this.productMapper = productMapper;
         this.addressMapper = addressMapper;
         this.inventoryService = inventoryService;
+        this.couponService = couponService;
     }
     
     public OrderResponse createOrderFromCart(Long userId, String sessionId, CreateOrderRequest request) {
@@ -49,7 +53,7 @@ public class OrderService {
         
         // Validate inventory and calculate totals
         validateCartInventory(cart);
-        OrderTotals totals = calculateOrderTotals(cart, request.getShippingMethodId(), request.getCouponCode());
+        OrderTotals totals = calculateOrderTotals(cart, request.getShippingMethodId(), request.getCouponCode(), userId);
         
         // Generate order number
         String orderNumber = generateOrderNumber();
@@ -96,6 +100,17 @@ public class OrderService {
                                             "Order " + orderNumber);
         }
         
+        // Record coupon usage if coupon was applied
+        if (request.getCouponCode() != null && !request.getCouponCode().trim().isEmpty() && 
+            totals.discountAmount.compareTo(BigDecimal.ZERO) > 0) {
+            CouponValidationResult couponResult = couponService.validateAndCalculateDiscount(
+                request.getCouponCode(), totals.subtotalAmount, userId, null);
+            if (couponResult.isValid() && couponResult.getCoupon() != null) {
+                couponService.recordCouponUsage(couponResult.getCoupon().getId(), userId, 
+                    order.getId(), totals.discountAmount);
+            }
+        }
+        
         // Clear cart after successful order creation
         cartMapper.deleteCartItemsByCartId(cart.getId());
         
@@ -112,7 +127,7 @@ public class OrderService {
         
         // Validate inventory and calculate totals
         validateDirectOrderInventory(request.getItems());
-        OrderTotals totals = calculateDirectOrderTotals(request.getItems(), request.getShippingMethodId(), request.getCouponCode());
+        OrderTotals totals = calculateDirectOrderTotals(request.getItems(), request.getShippingMethodId(), request.getCouponCode(), userId);
         
         // Generate order number
         String orderNumber = generateOrderNumber();
@@ -160,6 +175,17 @@ public class OrderService {
             // Reserve inventory
             inventoryService.reserveInventory(itemRequest.getProductId(), itemRequest.getQuantity(), 
                                             "Order " + orderNumber);
+        }
+        
+        // Record coupon usage if coupon was applied
+        if (request.getCouponCode() != null && !request.getCouponCode().trim().isEmpty() && 
+            totals.discountAmount.compareTo(BigDecimal.ZERO) > 0) {
+            CouponValidationResult couponResult = couponService.validateAndCalculateDiscount(
+                request.getCouponCode(), totals.subtotalAmount, userId, null);
+            if (couponResult.isValid() && couponResult.getCoupon() != null) {
+                couponService.recordCouponUsage(couponResult.getCoupon().getId(), userId, 
+                    order.getId(), totals.discountAmount);
+            }
         }
         
         return getOrderResponse(order.getId());
@@ -297,10 +323,20 @@ public class OrderService {
         }
     }
     
-    private OrderTotals calculateOrderTotals(Cart cart, Long shippingMethodId, String couponCode) {
+    private OrderTotals calculateOrderTotals(Cart cart, Long shippingMethodId, String couponCode, Long userId) {
         BigDecimal subtotal = BigDecimal.valueOf(cart.getTotalPrice());
         BigDecimal shipping = calculateShipping(subtotal, shippingMethodId);
-        BigDecimal discount = BigDecimal.ZERO; // TODO: Apply coupon discount
+        
+        // Apply coupon discount
+        BigDecimal discount = BigDecimal.ZERO;
+        if (couponCode != null && !couponCode.trim().isEmpty()) {
+            CouponValidationResult couponResult = couponService.validateAndCalculateDiscount(
+                couponCode, subtotal, userId, null); // TODO: Pass storeId when multi-store is supported
+            if (couponResult.isValid()) {
+                discount = couponResult.getDiscountAmount();
+            }
+        }
+        
         BigDecimal tax = calculateTax(subtotal.subtract(discount));
         BigDecimal total = subtotal.add(shipping).add(tax).subtract(discount);
         
@@ -308,7 +344,7 @@ public class OrderService {
     }
     
     private OrderTotals calculateDirectOrderTotals(List<CreateOrderRequest.OrderItemRequest> items, 
-                                                  Long shippingMethodId, String couponCode) {
+                                                  Long shippingMethodId, String couponCode, Long userId) {
         BigDecimal subtotal = BigDecimal.ZERO;
         
         for (CreateOrderRequest.OrderItemRequest item : items) {
@@ -320,7 +356,17 @@ public class OrderService {
         }
         
         BigDecimal shipping = calculateShipping(subtotal, shippingMethodId);
-        BigDecimal discount = BigDecimal.ZERO; // TODO: Apply coupon discount
+        
+        // Apply coupon discount
+        BigDecimal discount = BigDecimal.ZERO;
+        if (couponCode != null && !couponCode.trim().isEmpty()) {
+            CouponValidationResult couponResult = couponService.validateAndCalculateDiscount(
+                couponCode, subtotal, userId, null); // TODO: Pass storeId when multi-store is supported
+            if (couponResult.isValid()) {
+                discount = couponResult.getDiscountAmount();
+            }
+        }
+        
         BigDecimal tax = calculateTax(subtotal.subtract(discount));
         BigDecimal total = subtotal.add(shipping).add(tax).subtract(discount);
         

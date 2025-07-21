@@ -9,7 +9,7 @@ public class CouponUsage {
     private Long userId;
     private Long orderId;
     private BigDecimal discountAmount;
-    private LocalDateTime createdAt;
+    private LocalDateTime usedAt;
     
     // For joined data
     private Coupon coupon;
@@ -24,7 +24,7 @@ public class CouponUsage {
         this.userId = userId;
         this.orderId = orderId;
         this.discountAmount = discountAmount;
-        this.createdAt = LocalDateTime.now();
+        this.usedAt = LocalDateTime.now();
     }
     
     // Getters and Setters
@@ -43,8 +43,8 @@ public class CouponUsage {
     public BigDecimal getDiscountAmount() { return discountAmount; }
     public void setDiscountAmount(BigDecimal discountAmount) { this.discountAmount = discountAmount; }
     
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUsedAt() { return usedAt; }
+    public void setUsedAt(LocalDateTime usedAt) { this.usedAt = usedAt; }
     
     public Coupon getCoupon() { return coupon; }
     public void setCoupon(Coupon coupon) { this.coupon = coupon; }

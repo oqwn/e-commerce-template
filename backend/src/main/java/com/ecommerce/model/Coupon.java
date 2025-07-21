@@ -10,7 +10,7 @@ public class Coupon {
     private String name;
     private String description;
     private CouponType type;
-    private BigDecimal value;
+    private BigDecimal discountValue;
     private BigDecimal minimumOrderAmount;
     private BigDecimal maximumDiscountAmount;
     private Integer usageLimit;
@@ -19,6 +19,7 @@ public class Coupon {
     private LocalDateTime validFrom;
     private LocalDateTime validUntil;
     private Boolean isActive;
+    private Long storeId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -32,12 +33,12 @@ public class Coupon {
     // Constructors
     public Coupon() {}
     
-    public Coupon(String code, String name, CouponType type, BigDecimal value, 
+    public Coupon(String code, String name, CouponType type, BigDecimal discountValue, 
                   LocalDateTime validFrom, LocalDateTime validUntil) {
         this.code = code;
         this.name = name;
         this.type = type;
-        this.value = value;
+        this.discountValue = discountValue;
         this.validFrom = validFrom;
         this.validUntil = validUntil;
         this.minimumOrderAmount = BigDecimal.ZERO;
@@ -64,8 +65,8 @@ public class Coupon {
     public CouponType getType() { return type; }
     public void setType(CouponType type) { this.type = type; }
     
-    public BigDecimal getValue() { return value; }
-    public void setValue(BigDecimal value) { this.value = value; }
+    public BigDecimal getDiscountValue() { return discountValue; }
+    public void setDiscountValue(BigDecimal discountValue) { this.discountValue = discountValue; }
     
     public BigDecimal getMinimumOrderAmount() { return minimumOrderAmount; }
     public void setMinimumOrderAmount(BigDecimal minimumOrderAmount) { this.minimumOrderAmount = minimumOrderAmount; }
@@ -90,6 +91,10 @@ public class Coupon {
     
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public boolean isActive() { return isActive != null && isActive; }
+    
+    public Long getStoreId() { return storeId; }
+    public void setStoreId(Long storeId) { this.storeId = storeId; }
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
@@ -103,7 +108,7 @@ public class Coupon {
     // Utility methods
     public boolean isValid() {
         LocalDateTime now = LocalDateTime.now();
-        return isActive && 
+        return isActive() && 
                (validFrom == null || !now.isBefore(validFrom)) && 
                (validUntil == null || !now.isAfter(validUntil));
     }
@@ -129,10 +134,10 @@ public class Coupon {
         
         switch (type) {
             case PERCENTAGE:
-                discount = orderAmount.multiply(value.divide(BigDecimal.valueOf(100)));
+                discount = orderAmount.multiply(discountValue.divide(BigDecimal.valueOf(100)));
                 break;
             case FIXED_AMOUNT:
-                discount = value;
+                discount = discountValue;
                 break;
             case FREE_SHIPPING:
                 // This would be handled in shipping calculation
