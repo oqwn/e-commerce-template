@@ -2,7 +2,7 @@ const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://loca
 
 let authToken: string | null = null;
 
-export const api = {
+const api = {
   setAuthToken: (token: string) => {
     authToken = token;
   },
@@ -28,10 +28,10 @@ export const api = {
   get: async (endpoint: string) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: api.getHeaders(),
+      credentials: 'include',
     });
     
     if (response.status === 401) {
-      // Token might be expired, let the auth context handle it
       throw new Error('Unauthorized');
     }
     
@@ -49,6 +49,7 @@ export const api = {
       method: 'POST',
       headers: api.getHeaders(),
       body: JSON.stringify(body),
+      credentials: 'include',
     });
     
     if (response.status === 401) {
@@ -69,6 +70,7 @@ export const api = {
       method: 'PUT',
       headers: api.getHeaders(),
       body: JSON.stringify(body),
+      credentials: 'include',
     });
     
     if (response.status === 401) {
@@ -88,6 +90,7 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
       headers: api.getHeaders(),
+      credentials: 'include',
     });
     
     if (response.status === 401) {
@@ -105,3 +108,6 @@ export const api = {
 
   health: () => api.get('/health'),
 };
+
+export default api;
+export { api };

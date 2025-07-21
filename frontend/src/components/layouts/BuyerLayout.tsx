@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/useAuth';
+import { useCart } from '@/contexts/useCart';
 import {
   ShoppingBagIcon,
   HeartIcon,
@@ -13,6 +14,7 @@ import {
 
 const BuyerLayout: React.FC = () => {
   const { user, logout } = useAuth();
+  const { cartItemCount } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -64,9 +66,11 @@ const BuyerLayout: React.FC = () => {
                 className="p-2 text-gray-400 hover:text-gray-500 relative"
               >
                 <ShoppingCartIcon className="h-6 w-6" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  0
-                </span>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                  </span>
+                )}
               </Link>
 
               <div className="relative group">

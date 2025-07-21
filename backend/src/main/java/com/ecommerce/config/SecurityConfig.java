@@ -53,6 +53,17 @@ public class SecurityConfig {
                 // Public product browsing (will be added later)
                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()
                 
+                // Cart endpoints - mixed authentication (guest and authenticated)
+                .requestMatchers(HttpMethod.GET, "/cart", "/cart/count").permitAll()
+                .requestMatchers(HttpMethod.POST, "/cart/items").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/cart/items/**").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/cart/items/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/cart").authenticated()
+                .requestMatchers(HttpMethod.POST, "/cart/transfer").authenticated()
+                
+                // Shipping endpoints
+                .requestMatchers(HttpMethod.GET, "/shipping/**").permitAll()
+                
                 // Store endpoints - specific authenticated endpoints first
                 .requestMatchers("/stores/my-store").authenticated()
                 .requestMatchers(HttpMethod.POST, "/stores/**").authenticated()

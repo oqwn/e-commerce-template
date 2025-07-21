@@ -29,6 +29,15 @@ This document provides a complete set of user stories for an open‑source e‑c
 - **Store CRUD Operations** - Full store management with seller-specific access controls
 - **Store Analytics** - Performance tracking and analytics for seller stores
 
+#### **Shopping Cart & Checkout System**
+- **Cart Management Backend APIs** - Complete cart API with add/update/remove items
+- **Cart Context & Frontend** - React context for cart state management with persistence
+- **Cart UI Components** - Shopping cart page with quantity controls and item management
+- **Checkout Flow** - Multi-step checkout with address selection, shipping method, and payment
+- **Order Confirmation** - Order summary and confirmation page with details
+- **Address Management Integration** - Seamless address selection during checkout
+- **Shipping Options** - Multiple shipping methods with cost calculation
+
 #### **Technical Infrastructure**
 - **Backend** - Spring Boot 3.4.5 with MyBatis, JWT authentication, role-based security
 - **Frontend** - React 18 with TypeScript, Vite, TailwindCSS, proper authentication context
@@ -37,13 +46,15 @@ This document provides a complete set of user stories for an open‑source e‑c
 
 ### 🚧 In Progress
 - **OAuth 2.0 Integration** - Google, Facebook login (UI components ready, backend pending)
+- **Payment Integration** - Stripe/PayPal integration for checkout (UI ready, backend pending)
 
 ### 📋 Next Sprint Priorities
 1. Product catalog and management
-2. Shopping cart functionality
-3. Order processing system
-4. Payment integration
-5. Search and filtering
+2. Payment gateway integration (Stripe/PayPal)
+3. Coupon and discount system
+4. Shipping calculation with carriers
+5. Cart abandonment tracking
+6. Search and filtering
 
 ## Usage Recommendations
 

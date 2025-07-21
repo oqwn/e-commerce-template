@@ -1,7 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import { AuthProvider } from '@/contexts/AuthContext'
+import { CartProvider } from '@/contexts/CartContext'
 import Layout from '@/components/Layout'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import RoleBasedRouter from '@/components/RoleBasedRouter'
@@ -31,6 +34,9 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 
 // Buyer pages
 const ProductListing = lazy(() => import('@/pages/buyer/ProductListing'))
+const Cart = lazy(() => import('@/pages/Cart'))
+const Checkout = lazy(() => import('@/pages/Checkout'))
+const OrderConfirmation = lazy(() => import('@/pages/OrderConfirmation'))
 
 // Seller pages
 const StoreRegistration = lazy(() => import('@/pages/seller/StoreRegistration'))
@@ -40,7 +46,8 @@ const StoreAnalytics = lazy(() => import('@/pages/seller/StoreAnalytics'))
 function App() {
   return (
     <AuthProvider>
-      <Suspense fallback={<LoadingSpinner />}>
+      <CartProvider>
+        <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Public routes without layout */}
           <Route path="/login" element={<Login />} />
@@ -53,6 +60,11 @@ function App() {
           {/* Role-based redirect for authenticated users */}
           <Route path="/" element={<RoleBasedRedirect />} />
 
+          {/* Global cart and checkout routes */}
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
+
           {/* Buyer Routes */}
           <Route path="/buyer/*" element={
             <RoleBasedRouter allowedRoles={['BUYER']}>
@@ -64,7 +76,7 @@ function App() {
             <Route path="categories" element={<div>Categories Page</div>} />
             <Route path="wishlist" element={<div>Wishlist Page</div>} />
             <Route path="orders" element={<div>Orders Page</div>} />
-            <Route path="cart" element={<div>Cart Page</div>} />
+            <Route path="cart" element={<Cart />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />
           </Route>
@@ -112,7 +124,9 @@ function App() {
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Suspense>
+        </Suspense>
+        <ToastContainer position="top-right" autoClose={3000} />
+      </CartProvider>
     </AuthProvider>
   )
 }
