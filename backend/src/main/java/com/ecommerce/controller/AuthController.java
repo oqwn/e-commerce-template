@@ -54,9 +54,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginRequest request) {
         try {
+            logger.info("Login attempt for email: {}", request.getEmail());
+            
             User user = userService.authenticateUser(request.getEmail(), request.getPassword());
+            logger.info("Authentication result for {}: {}", request.getEmail(), user != null ? "SUCCESS" : "FAILED");
             
             if (user == null) {
+                logger.warn("Authentication failed for email: {}", request.getEmail());
                 return ResponseEntity.badRequest()
                     .body(ApiResponse.error("Invalid email or password"));
             }
@@ -77,9 +81,13 @@ public class AuthController {
             return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
             
         } catch (RuntimeException e) {
-            logger.error("Login failed: {}", e.getMessage());
+            logger.error("Login failed with RuntimeException: {}", e.getMessage(), e);
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Login failed with unexpected exception: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                .body(ApiResponse.error("Login failed"));
         }
     }
     

@@ -54,4 +54,21 @@ public class SecurityUtils {
         return authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_" + role));
     }
+    
+    public static boolean isAdmin() {
+        return hasRole("ADMIN");
+    }
+    
+    public static String getCurrentUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getAuthorities().stream()
+                    .map(authority -> authority.getAuthority())
+                    .filter(auth -> auth.startsWith("ROLE_"))
+                    .map(auth -> auth.substring(5))
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
+    }
 }

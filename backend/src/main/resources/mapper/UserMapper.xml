@@ -10,8 +10,8 @@
         <result column="first_name" property="firstName" />
         <result column="last_name" property="lastName" />
         <result column="phone" property="phone" />
-        <result column="role" property="role" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
-        <result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+        <result column="role" property="role" javaType="com.ecommerce.model.User$UserRole" />
+        <result column="status" property="status" javaType="com.ecommerce.model.User$UserStatus" />
         <result column="email_verified" property="emailVerified" />
         <result column="email_verification_token" property="emailVerificationToken" />
         <result column="email_verification_expiry" property="emailVerificationExpiry" />
@@ -55,8 +55,8 @@
             created_at, updated_at
         ) VALUES (
             #{email}, #{passwordHash}, #{firstName}, #{lastName}, #{phone}, 
-            #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler}, 
-            #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            #{role}, 
+            #{status},
             #{emailVerified}, #{emailVerificationToken}, #{emailVerificationExpiry},
             #{createdAt}, #{updatedAt}
         )
@@ -69,8 +69,8 @@
             first_name = #{firstName},
             last_name = #{lastName},
             phone = #{phone},
-            role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-            status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            role = #{role},
+            status = #{status},
             email_verified = #{emailVerified},
             updated_at = #{updatedAt}
         WHERE id = #{id}
@@ -161,14 +161,14 @@
     <!-- User management -->
     <update id="updateStatus">
         UPDATE users SET
-            status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            status = #{status},
             updated_at = NOW()
         WHERE id = #{id}
     </update>
 
     <update id="updateRole">
         UPDATE users SET
-            role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler},
+            role = #{role},
             updated_at = NOW()
         WHERE id = #{id}
     </update>
@@ -186,14 +186,14 @@
     <select id="findByRole" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         FROM users
-        WHERE role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        WHERE role = #{role}
         ORDER BY created_at DESC
     </select>
 
     <select id="findByStatus" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List" />
         FROM users
-        WHERE status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        WHERE status = #{status}
         ORDER BY created_at DESC
     </select>
 
@@ -219,12 +219,12 @@
 
     <select id="countByRole" resultType="java.lang.Long">
         SELECT COUNT(*) FROM users
-        WHERE role = #{role,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        WHERE role = #{role}
     </select>
 
     <select id="countByStatus" resultType="java.lang.Long">
         SELECT COUNT(*) FROM users
-        WHERE status = #{status,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+        WHERE status = #{status}
     </select>
 
     <select id="countRegisteredAfter" resultType="java.lang.Long">

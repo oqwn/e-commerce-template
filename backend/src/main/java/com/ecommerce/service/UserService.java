@@ -110,18 +110,25 @@ public class UserService implements UserDetailsService {
     public User authenticateUser(String email, String password) {
         Optional<User> userOpt = userMapper.findByEmail(email);
         if (userOpt.isEmpty()) {
+            System.out.println("DEBUG: User not found for email: " + email);
             return null;
         }
         
         User user = userOpt.get();
+        System.out.println("DEBUG: User found: " + user.getEmail() + ", status: " + user.getStatus());
+        System.out.println("DEBUG: Password hash: " + (user.getPasswordHash() != null ? "present" : "null"));
+        
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            System.out.println("DEBUG: Password does not match");
             return null;
         }
         
         if (user.getStatus() != User.UserStatus.ACTIVE) {
+            System.out.println("DEBUG: User status is not active: " + user.getStatus());
             throw new RuntimeException("Account is not active");
         }
         
+        System.out.println("DEBUG: Authentication successful");
         return user;
     }
     
