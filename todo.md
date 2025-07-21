@@ -96,18 +96,18 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 ## Phase 2: Core E-Commerce Features (Weeks 9-16)
 
 ### Shopping Cart & Checkout
-- [ ] 🔥 **M** Implement shopping cart backend APIs
-- [ ] 🔥 **M** Build cart management frontend
-- [ ] 🔥 **L** Create checkout flow with address selection
+- [x] 🔥 **M** Implement shopping cart backend APIs
+- [x] 🔥 **M** Build cart management frontend
+- [x] 🔥 **L** Create checkout flow with address selection
 - [ ] 🔥 **L** Implement payment integration (Stripe/PayPal)
-- [ ] ⭐ **M** Add shipping calculation
+- [x] ⭐ **M** Add shipping calculation
 - [ ] ⭐ **M** Implement coupon and discount system
 - [ ] 📈 **M** Add saved payment methods
 - [ ] 📈 **S** Implement cart abandonment tracking
 
 ### Order Management
-- [ ] 🔥 **L** Design order processing workflow
-- [ ] 🔥 **M** Create order status tracking
+- [x] 🔥 **L** Design order processing workflow
+- [x] 🔥 **M** Create order status tracking
 - [ ] 🔥 **M** Build order history for buyers
 - [ ] 🔥 **M** Implement seller order management
 - [ ] ⭐ **M** Add order cancellation and refund system
@@ -120,11 +120,11 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 - [ ] ⭐ **M** Implement wishlist/favorites system
 - [ ] ⭐ **M** Create product recommendation engine (basic)
 - [ ] 📈 **M** Add product Q&A system
-- [ ] 📈 **L** Implement advanced search with filters
+- [x] 📈 **L** Implement advanced search with filters
 - [ ] 📈 **M** Add recently viewed products
 
 ### Admin Panel Foundation
-- [ ] ⭐ **L** Create admin dashboard layout
+- [x] ⭐ **L** Create admin dashboard layout
 - [ ] ⭐ **M** Build user management interface
 - [ ] ⭐ **M** Implement product moderation tools
 - [ ] ⭐ **M** Create order oversight functionality

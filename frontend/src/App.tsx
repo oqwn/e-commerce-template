@@ -35,7 +35,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 // Buyer pages
 const ProductListing = lazy(() => import('@/pages/buyer/ProductListing'))
 const Cart = lazy(() => import('@/pages/Cart'))
-const Checkout = lazy(() => import('@/pages/Checkout'))
+const Checkout = lazy(() => import('@/pages/CheckoutWithStripe'))
 const OrderConfirmation = lazy(() => import('@/pages/OrderConfirmation'))
 
 

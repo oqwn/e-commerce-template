@@ -20,6 +20,11 @@ public class Payment {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
+    // Refund fields
+    private BigDecimal refundAmount;
+    private String refundReason;
+    private LocalDateTime refundDate;
+    
     // For joined data
     private Order order;
     
@@ -97,6 +102,15 @@ public class Payment {
     
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
+    
+    public BigDecimal getRefundAmount() { return refundAmount; }
+    public void setRefundAmount(BigDecimal refundAmount) { this.refundAmount = refundAmount; }
+    
+    public String getRefundReason() { return refundReason; }
+    public void setRefundReason(String refundReason) { this.refundReason = refundReason; }
+    
+    public LocalDateTime getRefundDate() { return refundDate; }
+    public void setRefundDate(LocalDateTime refundDate) { this.refundDate = refundDate; }
     
     // Utility methods
     public boolean isSuccessful() {

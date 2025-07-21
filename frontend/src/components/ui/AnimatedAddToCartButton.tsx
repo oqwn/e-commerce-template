@@ -62,7 +62,7 @@ const AnimatedAddToCartButton: React.FC<AnimatedAddToCartButtonProps> = ({
       // Start animation (always try animation, even without image)
       console.log('🎭 Starting animation for product:', productName);
       animateAddToCart({
-        productImageUrl,
+        productImageUrl: productImageUrl || '',
         productName,
         sourceElement: buttonRef.current,
         onComplete: () => {

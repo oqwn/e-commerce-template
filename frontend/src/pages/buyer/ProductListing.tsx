@@ -3,8 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import {
   MagnifyingGlassIcon,
   HeartIcon,
-  StarIcon,
-  ShoppingCartIcon,
+  StarIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { Product, Category } from '@/types';
@@ -24,7 +23,7 @@ const ProductListing: React.FC = () => {
     min: searchParams.get('min_price') || '',
     max: searchParams.get('max_price') || ''
   });
-  const { addToCart } = useCart();
+  const { } = useCart();
 
   useEffect(() => {
     fetchProducts();
