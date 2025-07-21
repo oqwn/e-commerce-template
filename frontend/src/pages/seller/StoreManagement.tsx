@@ -54,7 +54,7 @@ const StoreManagement: React.FC = () => {
     try {
       setIsSaving(true);
       const headers: Record<string, string> = {};
-      const authToken = (api as any).authToken || localStorage.getItem('token');
+      const authToken = (api as any).authToken || localStorage.getItem('accessToken');
       if (authToken) {
         headers['Authorization'] = `Bearer ${authToken}`;
       }
