@@ -52,8 +52,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const response = await api.get('/cart');
-      if (response.data.success) {
-        setCart(response.data.data);
+      if (response.success) {
+        setCart(response.data);
       }
     } catch (error) {
       console.error('Failed to fetch cart:', error);
@@ -74,8 +74,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         quantity,
         selectedVariants: variants
       });
-      if (response.data.success) {
-        setCart(response.data.data);
+      if (response.success) {
+        setCart(response.data);
         toast.success('Item added to cart');
       }
     } catch (error: any) {
@@ -90,8 +90,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const response = await api.put(`/cart/items/${itemId}`, { quantity });
-      if (response.data.success) {
-        setCart(response.data.data);
+      if (response.success) {
+        setCart(response.data);
         toast.success('Cart updated');
       }
     } catch (error: any) {
@@ -106,8 +106,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const response = await api.delete(`/cart/items/${itemId}`);
-      if (response.data.success) {
-        setCart(response.data.data);
+      if (response.success) {
+        setCart(response.data);
         toast.success('Item removed from cart');
       }
     } catch (error: any) {
@@ -122,7 +122,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const response = await api.delete('/cart');
-      if (response.data.success) {
+      if (response.success) {
         setCart(null);
         toast.success('Cart cleared');
       }
