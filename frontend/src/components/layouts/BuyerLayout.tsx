@@ -27,8 +27,6 @@ const BuyerLayout: React.FC = () => {
     { name: 'Products', href: '/buyer/products', icon: ShoppingBagIcon },
     { name: 'Flash Sales', href: '/buyer/flash-sales', icon: BoltIcon },
     { name: 'Categories', href: '/buyer/categories', icon: Bars3Icon },
-    { name: 'Wishlist', href: '/buyer/wishlist', icon: HeartIcon },
-    { name: 'Orders', href: '/buyer/orders', icon: ShoppingCartIcon },
   ];
 
   const handleLogout = () => {
@@ -115,12 +113,6 @@ const BuyerLayout: React.FC = () => {
                     My Profile
                   </Link>
                   <Link
-                    to="/buyer/orders"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    My Orders
-                  </Link>
-                  <Link
                     to="/buyer/settings"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
@@ -193,7 +185,6 @@ const BuyerLayout: React.FC = () => {
               <h3 className="text-lg font-semibold mb-4">Account</h3>
               <ul className="space-y-2">
                 <li><Link to="/buyer/profile" className="hover:text-gray-300">My Account</Link></li>
-                <li><Link to="/buyer/orders" className="hover:text-gray-300">Order History</Link></li>
                 <li><Link to="/buyer/wishlist" className="hover:text-gray-300">Wishlist</Link></li>
               </ul>
             </div>
