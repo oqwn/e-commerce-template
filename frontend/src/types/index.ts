@@ -146,9 +146,14 @@ export interface Category {
   parentId?: number;
   imageUrl?: string;
   isActive: boolean;
-  displayOrder: number;
+  displayOrder?: number;
+  sortOrder: number;
   createdAt: string;
   updatedAt: string;
+  // Computed/joined properties
+  children?: Category[];
+  productCount?: number;
+  parent?: Category;
 }
 
 // Search and filter types
