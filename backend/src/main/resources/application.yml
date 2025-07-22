@@ -86,7 +86,7 @@ app:
     path: ${UPLOAD_PATH:./uploads}
     base-url: ${BASE_URL:http://localhost:8080/api}/files
   stripe:
-    api-key: ${STRIPE_API_KEY}
+    api-key: ${STRIPE_API_KEY:dummy_test_key_for_local_development}
     webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_test_secret}
     currency: USD
 
