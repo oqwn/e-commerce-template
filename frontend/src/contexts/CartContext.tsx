@@ -7,11 +7,17 @@ interface CartItem {
   id: number;
   productId: number;
   productName: string;
-  productImage: string;
-  price: number;
+  productImage?: string;
+  productImageUrl?: string;
+  price?: number;
+  priceAtTime?: number;
   quantity: number;
   selectedVariants?: any;
   totalPrice: number;
+  storeName?: string;
+  storeId?: number;
+  inStock?: boolean;
+  availableQuantity?: number;
 }
 
 interface Cart {

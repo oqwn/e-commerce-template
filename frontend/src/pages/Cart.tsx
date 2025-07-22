@@ -67,12 +67,12 @@ const Cart: React.FC = () => {
                     <div className="flex items-center">
                       <img
                         className="h-20 w-20 rounded-md object-cover"
-                        src={item.productImage || '/placeholder.png'}
+                        src={item.productImageUrl || item.productImage || '/placeholder.png'}
                         alt={item.productName}
                       />
                       <div className="ml-4 flex-1">
                         <h3 className="text-lg font-medium text-gray-900">{item.productName}</h3>
-                        <p className="mt-1 text-sm text-gray-500">${item.price.toFixed(2)} each</p>
+                        <p className="mt-1 text-sm text-gray-500">${(item.priceAtTime || item.price || 0).toFixed(2)} each</p>
                         {item.selectedVariants && (
                           <p className="mt-1 text-sm text-gray-500">
                             Variants: {JSON.stringify(item.selectedVariants)}

@@ -39,7 +39,7 @@ public interface WishlistMapper {
             "FROM wishlist w " +
             "JOIN users u ON w.user_id = u.id " +
             "JOIN products p ON w.product_id = p.id " +
-            "JOIN stores s ON p.seller_id = s.id " +
+            "JOIN stores s ON p.seller_id = s.seller_id " +
             "LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = true " +
             "WHERE w.user_id = #{userId} " +
             "ORDER BY w.priority DESC, w.created_at DESC " +
