@@ -44,9 +44,15 @@ This document provides a complete set of user stories for an open‑source e‑c
 - **Database** - H2 with PostgreSQL compatibility, migration-ready schema
 - **Code Quality** - ESLint, TypeScript compilation, Maven compilation all passing
 
+### ✅ Recently Completed
+- **Product Detail Pages** - Full product detail view with image gallery, reviews display, and add-to-cart functionality
+- **Coupon and Discount System** - Complete implementation with seller management and buyer validation
+- **Seller Order Management** - Comprehensive order processing interface with status updates
+- **Order History** - Buyer order tracking with status visualization
+
 ### 🚧 In Progress
 - **OAuth 2.0 Integration** - Google, Facebook login (UI components ready, backend pending)
-- **Payment Integration** - Stripe/PayPal integration for checkout (UI ready, backend pending)
+- **Product Reviews API** - Schema exists, endpoints need implementation
 
 ### 📋 Next Sprint Priorities
 1. Product catalog and management

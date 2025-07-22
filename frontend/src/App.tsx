@@ -34,6 +34,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 
 // Buyer pages
 const ProductListing = lazy(() => import('@/pages/buyer/ProductListing'))
+const ProductDetail = lazy(() => import('@/pages/buyer/ProductDetail'))
 const OrderHistory = lazy(() => import('@/pages/buyer/OrderHistory'))
 const Cart = lazy(() => import('@/pages/Cart'))
 const Checkout = lazy(() => import('@/pages/CheckoutWithStripe'))
@@ -78,6 +79,7 @@ function App() {
           }>
             <Route index element={<BuyerDashboard />} />
             <Route path="products" element={<ProductListing />} />
+            <Route path="products/:slug" element={<ProductDetail />} />
             <Route path="categories" element={<div>Categories Page</div>} />
             <Route path="wishlist" element={<div>Wishlist Page</div>} />
             <Route path="orders" element={<OrderHistory />} />
