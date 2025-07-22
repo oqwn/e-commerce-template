@@ -51,7 +51,7 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 - [x] ✅ **M** Set up PostgreSQL database with basic schema
 - [x] ✅ **S** Configure Redis for caching and sessions
 - [x] ✅ **S** Migrate from H2 to MySQL database (completed with setup scripts)
-- [ ] 🔥 **S** Set up API documentation with OpenAPI/Swagger
+- [x] 🔥 **S** Set up API documentation with OpenAPI/Swagger (✅ SpringDoc OpenAPI 3.0 integrated)
 - [x] ✅ **M** Implement comprehensive logging and monitoring (Prometheus + Grafana)
 - [x] ✅ **S** Configure environment-based configurations
 

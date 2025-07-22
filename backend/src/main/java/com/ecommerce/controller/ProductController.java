@@ -5,6 +5,14 @@ import com.ecommerce.dto.ProductImageDto;
 import com.ecommerce.model.Product;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.FileUploadService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +32,8 @@ import java.io.IOException;
 @RequestMapping("/products")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Products", description = "Product management endpoints")
+@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
     
     private final ProductService productService;
@@ -31,105 +41,121 @@ public class ProductController {
     
     @PostMapping
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> createProduct(@Valid @RequestBody CreateProductRequest request) {
+    @Operation(summary = "Create a new product", description = "Creates a new product listing (Seller/Admin only)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Product created successfully",
+            content = @Content(schema = @Schema(implementation = ProductDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class)))
+    })
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> createProduct(@Valid @RequestBody CreateProductRequest request) {
         log.info("Creating new product: {}", request.getName());
         ProductDto product = productService.createProduct(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Product created successfully", product));
+                .body(com.ecommerce.dto.ApiResponse.success("Product created successfully", product));
     }
     
     @PutMapping("/{productId}")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> updateProduct(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> updateProduct(
             @PathVariable Long productId,
             @Valid @RequestBody UpdateProductRequest request) {
         log.info("Updating product: {}", productId);
         ProductDto product = productService.updateProduct(productId, request);
-        return ResponseEntity.ok(ApiResponse.success("Product updated successfully", product));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Product updated successfully", product));
     }
     
     @GetMapping("/{productId}")
-    public ResponseEntity<ApiResponse> getProduct(@PathVariable Long productId) {
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getProduct(@PathVariable Long productId) {
         ProductDto product = productService.getProductById(productId);
-        return ResponseEntity.ok(ApiResponse.success(product));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(product));
     }
     
     @GetMapping("/slug/{slug}")
-    public ResponseEntity<ApiResponse> getProductBySlug(@PathVariable String slug) {
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getProductBySlug(@PathVariable String slug) {
         ProductDto product = productService.getProductBySlug(slug);
-        return ResponseEntity.ok(ApiResponse.success(product));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(product));
     }
     
     @PostMapping("/search")
-    public ResponseEntity<ApiResponse> searchProducts(
+    @Operation(summary = "Search products", description = "Search products with filters including keyword, category, price range, and sorting")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Search results returned successfully",
+            content = @Content(schema = @Schema(implementation = ProductDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid search parameters",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class)))
+    })
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> searchProducts(
             @Valid @RequestBody ProductSearchRequest request) {
         List<ProductDto> products = productService.searchProducts(request);
-        return ResponseEntity.ok(ApiResponse.success(products));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(products));
     }
     
     @GetMapping("/seller/{sellerId}")
-    public ResponseEntity<ApiResponse> getProductsBySeller(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getProductsBySeller(
             @PathVariable Long sellerId) {
         List<ProductDto> products = productService.getProductsBySeller(sellerId);
-        return ResponseEntity.ok(ApiResponse.success(products));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(products));
     }
     
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse> getProductsByCategory(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getProductsByCategory(
             @PathVariable Long categoryId) {
         List<ProductDto> products = productService.getProductsByCategory(categoryId);
-        return ResponseEntity.ok(ApiResponse.success(products));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(products));
     }
     
     @GetMapping("/featured")
-    public ResponseEntity<ApiResponse> getFeaturedProducts(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getFeaturedProducts(
             @RequestParam(required = false, defaultValue = "10") @Min(1) Integer limit) {
         List<ProductDto> products = productService.getFeaturedProducts(limit);
-        return ResponseEntity.ok(ApiResponse.success(products));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(products));
     }
     
     @GetMapping("/latest")
-    public ResponseEntity<ApiResponse> getLatestProducts(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getLatestProducts(
             @RequestParam(required = false, defaultValue = "10") @Min(1) Integer limit) {
         List<ProductDto> products = productService.getLatestProducts(limit);
-        return ResponseEntity.ok(ApiResponse.success(products));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(products));
     }
     
     @DeleteMapping("/{productId}")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long productId) {
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> deleteProduct(@PathVariable Long productId) {
         log.info("Deleting product: {}", productId);
         productService.deleteProduct(productId);
-        return ResponseEntity.ok(ApiResponse.success("Product deleted successfully"));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Product deleted successfully"));
     }
     
     @PatchMapping("/{productId}/status")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> updateProductStatus(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> updateProductStatus(
             @PathVariable Long productId,
             @RequestParam String status) {
         UpdateProductRequest request = UpdateProductRequest.builder()
                 .status(Product.ProductStatus.valueOf(status.toUpperCase()))
                 .build();
         ProductDto product = productService.updateProduct(productId, request);
-        return ResponseEntity.ok(ApiResponse.success("Product status updated successfully", product));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Product status updated successfully", product));
     }
     
     @PatchMapping("/{productId}/featured")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> toggleFeatured(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> toggleFeatured(
             @PathVariable Long productId,
             @RequestParam Boolean featured) {
         UpdateProductRequest request = UpdateProductRequest.builder()
                 .featured(featured)
                 .build();
         ProductDto product = productService.updateProduct(productId, request);
-        return ResponseEntity.ok(ApiResponse.success("Product featured status updated", product));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Product featured status updated", product));
     }
     
     @PostMapping("/{productId}/images")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> uploadProductImage(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> uploadProductImage(
             @PathVariable Long productId,
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "displayOrder", defaultValue = "0") Integer displayOrder,
@@ -140,20 +166,20 @@ public class ProductController {
             
             ProductImageDto imageDto = productService.addProductImage(productId, imageUrl, altText, displayOrder);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ApiResponse.success("Image uploaded successfully", imageDto));
+                    .body(com.ecommerce.dto.ApiResponse.success("Image uploaded successfully", imageDto));
         } catch (IOException e) {
             log.error("Error uploading image for product: {}", productId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to upload image: " + e.getMessage()));
+                    .body(com.ecommerce.dto.ApiResponse.error("Failed to upload image: " + e.getMessage()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
-                    .body(ApiResponse.error(e.getMessage()));
+                    .body(com.ecommerce.dto.ApiResponse.error(e.getMessage()));
         }
     }
     
     @DeleteMapping("/{productId}/images/{imageId}")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> deleteProductImage(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> deleteProductImage(
             @PathVariable Long productId,
             @PathVariable Long imageId) {
         log.info("Deleting image {} for product: {}", imageId, productId);
@@ -164,12 +190,12 @@ public class ProductController {
         }
         
         productService.deleteProductImage(productId, imageId);
-        return ResponseEntity.ok(ApiResponse.success("Image deleted successfully"));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Image deleted successfully"));
     }
     
     @PutMapping("/{productId}/images/{imageId}")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
-    public ResponseEntity<ApiResponse> updateProductImage(
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> updateProductImage(
             @PathVariable Long productId,
             @PathVariable Long imageId,
             @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
@@ -177,6 +203,6 @@ public class ProductController {
         log.info("Updating image {} for product: {}", imageId, productId);
         
         ProductImageDto imageDto = productService.updateProductImage(productId, imageId, altText, displayOrder);
-        return ResponseEntity.ok(ApiResponse.success("Image updated successfully", imageDto));
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Image updated successfully", imageDto));
     }
 }

@@ -49,6 +49,7 @@ This document provides a complete set of user stories for an open‑source e‑c
 - **Coupon and Discount System** - Complete implementation with seller management and buyer validation
 - **Seller Order Management** - Comprehensive order processing interface with status updates
 - **Order History** - Buyer order tracking with status visualization
+- **API Documentation** - SpringDoc OpenAPI 3.0 with Swagger UI at `/api/swagger-ui.html`
 
 ### 🚧 In Progress
 - **OAuth 2.0 Integration** - Google, Facebook login (UI components ready, backend pending)
