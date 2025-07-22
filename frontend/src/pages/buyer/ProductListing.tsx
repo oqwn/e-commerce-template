@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
-  MagnifyingGlassIcon,
-  HeartIcon,
-  StarIcon
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
-import { StarIcon as StarIconSolid, HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { Product, Category } from '@/types';
 import { api } from '@/services/api';
 // import { useCart } from '@/contexts/useCart'; // Will be used when cart functionality is implemented
-import AnimatedAddToCartButton from '@/components/ui/AnimatedAddToCartButton';
-import { useWishlist } from '@/hooks/useWishlist';
+import { ProductCard } from '@/components/products/ProductCard';
 
 const ProductListing: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,7 +21,6 @@ const ProductListing: React.FC = () => {
     max: searchParams.get('max_price') || ''
   });
   // const { addToCart } = useCart(); // Will be used when cart functionality is implemented
-  const { isInWishlist, toggleWishlist, isTogglingWishlist } = useWishlist();
 
   useEffect(() => {
     fetchProducts();
@@ -99,22 +94,6 @@ const ProductListing: React.FC = () => {
     
     setSearchParams(params);
   };
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        stars.push(<StarIconSolid key={i} className="h-4 w-4 text-yellow-400" />);
-      } else {
-        stars.push(<StarIcon key={i} className="h-4 w-4 text-gray-300" />);
-      }
-    }
-
-    return stars;
-  };
-
 
   if (isLoading) {
     return (
@@ -208,92 +187,7 @@ const ProductListing: React.FC = () => {
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow group">
-            <Link to={`/buyer/products/${product.slug}`}>
-              <div className="aspect-square bg-gray-100 rounded-t-lg overflow-hidden relative">
-                {product.images && product.images.length > 0 ? (
-                  <img
-                    src={product.images[0].imageUrl}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="text-gray-400">No Image</div>
-                  </div>
-                )}
-                
-                {/* Wishlist Button */}
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleWishlist(product.id);
-                  }}
-                  disabled={isTogglingWishlist}
-                  className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
-                >
-                  {isInWishlist(product.id) ? (
-                    <HeartIconSolid className="h-5 w-5 text-red-500" />
-                  ) : (
-                    <HeartIcon className="h-5 w-5 text-gray-600" />
-                  )}
-                </button>
-
-                {/* Discount Badge */}
-                {product.discountPercentage && (
-                  <div className="absolute top-2 left-2">
-                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
-                      -{product.discountPercentage}%
-                    </span>
-                  </div>
-                )}
-              </div>
-            </Link>
-
-            <div className="p-4">
-              <Link to={`/buyer/products/${product.slug}`}>
-                <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 hover:text-blue-600">
-                  {product.name}
-                </h3>
-              </Link>
-              
-              {/* Rating */}
-              {product.averageRating && (
-                <div className="flex items-center mb-2">
-                  <div className="flex items-center">
-                    {renderStars(product.averageRating)}
-                  </div>
-                  <span className="text-sm text-gray-600 ml-2">
-                    ({product.reviewCount || 0})
-                  </span>
-                </div>
-              )}
-
-              {/* Price */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-bold text-gray-900">
-                    ${product.price}
-                  </span>
-                  {product.compareAtPrice && (
-                    <span className="text-sm text-gray-500 line-through">
-                      ${product.compareAtPrice}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Add to Cart Button */}
-              <AnimatedAddToCartButton
-                productId={product.id}
-                productName={product.name}
-                productImageUrl={product.images?.[0]?.imageUrl}
-                className="w-full"
-                variant="primary"
-                size="md"
-              />
-            </div>
-          </div>
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
 

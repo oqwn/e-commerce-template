@@ -35,6 +35,33 @@ public interface ProductMapper {
     @ResultMap("productResultMap")
     List<Product> findByCategoryId(Long categoryId);
     
+    @Select("SELECT p.*, " +
+            "fsp.sale_price as flash_sale_price, " +
+            "fsp.original_price as flash_original_price, " +
+            "fs.end_time as flash_sale_end_time, " +
+            "CASE WHEN fs.id IS NOT NULL THEN 1 ELSE 0 END as has_flash_sale " +
+            "FROM products p " +
+            "LEFT JOIN flash_sale_products fsp ON p.id = fsp.product_id " +
+            "LEFT JOIN flash_sales fs ON fsp.flash_sale_id = fs.id " +
+            "AND fs.is_active = true AND fs.start_time <= NOW() AND fs.end_time > NOW() " +
+            "WHERE p.id = #{id}")
+    @Results(id = "productWithFlashSaleResultMap", value = {
+        @Result(property = "sellerId", column = "seller_id"),
+        @Result(property = "categoryId", column = "category_id"),
+        @Result(property = "shortDescription", column = "short_description"),
+        @Result(property = "compareAtPrice", column = "compare_at_price"),
+        @Result(property = "trackQuantity", column = "track_quantity"),
+        @Result(property = "weightUnit", column = "weight_unit"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "publishedAt", column = "published_at"),
+        @Result(property = "flashSalePrice", column = "flash_sale_price"),
+        @Result(property = "flashOriginalPrice", column = "flash_original_price"),
+        @Result(property = "flashSaleEndTime", column = "flash_sale_end_time"),
+        @Result(property = "hasFlashSale", column = "has_flash_sale")
+    })
+    Product findByIdWithFlashSale(Long id);
+    
     @Insert("INSERT INTO products (seller_id, category_id, name, slug, description, short_description, " +
             "sku, price, compare_at_price, cost, quantity, track_quantity, weight, weight_unit, " +
             "status, featured) VALUES (#{sellerId}, #{categoryId}, #{name}, #{slug}, #{description}, " +

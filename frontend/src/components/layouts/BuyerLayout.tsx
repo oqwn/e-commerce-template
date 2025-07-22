@@ -11,6 +11,7 @@ import {
   HomeIcon,
   ShoppingCartIcon,
   Bars3Icon,
+  BoltIcon,
 } from '@heroicons/react/24/outline';
 
 const BuyerLayout: React.FC = () => {
@@ -24,6 +25,7 @@ const BuyerLayout: React.FC = () => {
   const navigation = [
     { name: 'Home', href: '/buyer', icon: HomeIcon },
     { name: 'Products', href: '/buyer/products', icon: ShoppingBagIcon },
+    { name: 'Flash Sales', href: '/buyer/flash-sales', icon: BoltIcon },
     { name: 'Categories', href: '/buyer/categories', icon: Bars3Icon },
     { name: 'Wishlist', href: '/buyer/wishlist', icon: HeartIcon },
     { name: 'Orders', href: '/buyer/orders', icon: ShoppingCartIcon },

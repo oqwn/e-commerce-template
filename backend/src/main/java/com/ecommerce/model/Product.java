@@ -52,6 +52,12 @@ public class Product {
     private Integer reviewCount;
     private Integer viewCount;
     
+    // Flash sale fields
+    private BigDecimal flashSalePrice;
+    private BigDecimal flashOriginalPrice;
+    private LocalDateTime flashSaleEndTime;
+    private Boolean hasFlashSale;
+    
     public enum ProductStatus {
         DRAFT,
         ACTIVE,
