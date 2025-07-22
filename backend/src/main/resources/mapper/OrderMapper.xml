@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.mapper.OrderMapper">
+
+    <!-- Result Maps -->
+    <resultMap id="OrderResultMap" type="com.ecommerce.model.Order">
+        <id property="id" column="id"/>
+        <result property="orderNumber" column="order_number"/>
+        <result property="userId" column="user_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="shippingAddressId" column="shipping_address_id"/>
+        <result property="billingAddressId" column="billing_address_id"/>
+        <result property="subtotal" column="subtotal"/>
+        <result property="taxAmount" column="tax_amount"/>
+        <result property="shippingAmount" column="shipping_amount"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="status" column="status"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="paymentStatus" column="payment_status"/>
+        <result property="paymentTransactionId" column="payment_transaction_id"/>
+        <result property="notes" column="notes"/>
+        <result property="trackingNumber" column="tracking_number"/>
+        <result property="estimatedDeliveryDate" column="estimated_delivery_date"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="paidAt" column="paid_at"/>
+        <result property="shippedAt" column="shipped_at"/>
+        <result property="deliveredAt" column="delivered_at"/>
+        <result property="cancelledAt" column="cancelled_at"/>
+    </resultMap>
+
+    <resultMap id="OrderWithItemsResultMap" type="com.ecommerce.model.Order" extends="OrderResultMap">
+        <collection property="items" ofType="com.ecommerce.model.OrderItem">
+            <id property="id" column="item_id"/>
+            <result property="orderId" column="order_id"/>
+            <result property="productId" column="product_id"/>
+            <result property="productName" column="product_name"/>
+            <result property="productSku" column="product_sku"/>
+            <result property="quantity" column="quantity"/>
+            <result property="price" column="price"/>
+            <result property="subtotal" column="item_subtotal"/>
+            <result property="createdAt" column="item_created_at"/>
+            <result property="updatedAt" column="item_updated_at"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="OrderItemResultMap" type="com.ecommerce.model.OrderItem">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="productSku" column="product_sku"/>
+        <result property="quantity" column="quantity"/>
+        <result property="price" column="price"/>
+        <result property="subtotal" column="subtotal"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- Order CRUD operations -->
+    <insert id="insertOrder" parameterType="com.ecommerce.model.Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO orders (
+            order_number, user_id, store_id, shipping_address_id, billing_address_id,
+            subtotal, tax_amount, shipping_amount, discount_amount, total_amount,
+            status, payment_method, payment_status, payment_transaction_id,
+            notes, tracking_number, estimated_delivery_date,
+            created_at, updated_at
+        ) VALUES (
+            #{orderNumber}, #{userId}, #{storeId}, #{shippingAddressId}, #{billingAddressId},
+            #{subtotal}, #{taxAmount}, #{shippingAmount}, #{discountAmount}, #{totalAmount},
+            #{status}, #{paymentMethod}, #{paymentStatus}, #{paymentTransactionId},
+            #{notes}, #{trackingNumber}, #{estimatedDeliveryDate},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateOrder" parameterType="com.ecommerce.model.Order">
+        UPDATE orders SET
+            shipping_address_id = #{shippingAddressId},
+            billing_address_id = #{billingAddressId},
+            subtotal = #{subtotal},
+            tax_amount = #{taxAmount},
+            shipping_amount = #{shippingAmount},
+            discount_amount = #{discountAmount},
+            total_amount = #{totalAmount},
+            status = #{status},
+            payment_method = #{paymentMethod},
+            payment_status = #{paymentStatus},
+            payment_transaction_id = #{paymentTransactionId},
+            notes = #{notes},
+            tracking_number = #{trackingNumber},
+            estimated_delivery_date = #{estimatedDeliveryDate},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteOrderById">
+        DELETE FROM orders WHERE id = #{id}
+    </delete>
+
+    <select id="findOrderById" resultMap="OrderResultMap">
+        SELECT * FROM orders WHERE id = #{id}
+    </select>
+
+    <select id="findOrderByOrderNumber" resultMap="OrderResultMap">
+        SELECT * FROM orders WHERE order_number = #{orderNumber}
+    </select>
+
+    <select id="findOrderWithItems" resultMap="OrderWithItemsResultMap">
+        SELECT 
+            o.*,
+            oi.id as item_id,
+            oi.product_id,
+            oi.product_name,
+            oi.product_sku,
+            oi.quantity,
+            oi.price,
+            oi.subtotal as item_subtotal,
+            oi.created_at as item_created_at,
+            oi.updated_at as item_updated_at
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.id = #{id}
+    </select>
+
+    <select id="findOrderWithItemsAndAddresses" resultMap="OrderWithItemsResultMap">
+        SELECT 
+            o.*,
+            oi.id as item_id,
+            oi.product_id,
+            oi.product_name,
+            oi.product_sku,
+            oi.quantity,
+            oi.price,
+            oi.subtotal as item_subtotal,
+            oi.created_at as item_created_at,
+            oi.updated_at as item_updated_at
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.id = #{id}
+    </select>
+
+    <!-- Order item CRUD operations -->
+    <insert id="insertOrderItem" parameterType="com.ecommerce.model.OrderItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO order_items (
+            order_id, product_id, product_name, product_sku,
+            quantity, price, subtotal, created_at, updated_at
+        ) VALUES (
+            #{orderId}, #{productId}, #{productName}, #{productSku},
+            #{quantity}, #{price}, #{subtotal}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="updateOrderItem" parameterType="com.ecommerce.model.OrderItem">
+        UPDATE order_items SET
+            quantity = #{quantity},
+            price = #{price},
+            subtotal = #{subtotal},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteOrderItemById">
+        DELETE FROM order_items WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteOrderItemsByOrderId">
+        DELETE FROM order_items WHERE order_id = #{orderId}
+    </delete>
+
+    <select id="findOrderItemById" resultMap="OrderItemResultMap">
+        SELECT * FROM order_items WHERE id = #{id}
+    </select>
+
+    <select id="findOrderItemsByOrderId" resultMap="OrderItemResultMap">
+        SELECT * FROM order_items WHERE order_id = #{orderId}
+    </select>
+
+    <select id="findOrderItemsWithProductsByOrderId" resultMap="OrderItemResultMap">
+        SELECT oi.*, p.name as product_name, p.sku as product_sku
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+        WHERE oi.order_id = #{orderId}
+    </select>
+
+    <!-- Order status management -->
+    <update id="updateOrderStatus">
+        UPDATE orders SET 
+            status = #{status},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePaymentStatus">
+        UPDATE orders SET 
+            payment_status = #{paymentStatus},
+            <if test="paymentStatus.toString() == 'PAID'">
+                paid_at = NOW(),
+            </if>
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="markOrderAsDelivered">
+        UPDATE orders SET 
+            status = 'DELIVERED',
+            delivered_at = #{deliveredAt},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="markOrderAsCancelled">
+        UPDATE orders SET 
+            status = 'CANCELLED',
+            cancelled_at = #{cancelledAt},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- User order queries -->
+    <select id="findOrdersByUserId" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findOrdersByUserIdWithPagination" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findOrdersByUserIdAndStatus" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE user_id = #{userId} AND status = #{status}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Store order queries -->
+    <select id="findOrdersByStoreId" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE store_id = #{storeId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findOrdersByStoreIdWithPagination" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE store_id = #{storeId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findOrdersByStoreIdAndStatus" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE store_id = #{storeId} AND status = #{status}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Admin order queries -->
+    <select id="findAllOrders" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findAllOrdersWithPagination" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="findOrdersByStatus" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE status = #{status}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findOrdersByPaymentStatus" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE payment_status = #{paymentStatus}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findOrdersCreatedBetween" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE created_at BETWEEN #{startDate} AND #{endDate}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Order search -->
+    <select id="searchOrdersByOrderNumber" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE order_number LIKE CONCAT('%', #{orderNumber}, '%')
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="searchOrdersByUserEmail" resultMap="OrderResultMap">
+        SELECT o.* FROM orders o
+        JOIN users u ON o.user_id = u.id
+        WHERE u.email LIKE CONCAT('%', #{email}, '%')
+        ORDER BY o.created_at DESC
+    </select>
+
+    <!-- Order statistics -->
+    <select id="countOrdersByUserId" resultType="long">
+        SELECT COUNT(*) FROM orders WHERE user_id = #{userId}
+    </select>
+
+    <select id="countOrdersByStoreId" resultType="long">
+        SELECT COUNT(*) FROM orders WHERE store_id = #{storeId}
+    </select>
+
+    <select id="countAllOrders" resultType="long">
+        SELECT COUNT(*) FROM orders
+    </select>
+
+    <select id="countOrdersByStatus" resultType="long">
+        SELECT COUNT(*) FROM orders WHERE status = #{status}
+    </select>
+
+    <select id="countOrdersByPaymentStatus" resultType="long">
+        SELECT COUNT(*) FROM orders WHERE payment_status = #{paymentStatus}
+    </select>
+
+    <select id="getTotalRevenueByStoreId" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0) FROM orders 
+        WHERE store_id = #{storeId} AND payment_status = 'PAID'
+    </select>
+
+    <select id="getTotalRevenueByUserId" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0) FROM orders 
+        WHERE user_id = #{userId} AND payment_status = 'PAID'
+    </select>
+
+    <select id="getTotalRevenue" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(total_amount), 0) FROM orders 
+        WHERE payment_status = 'PAID'
+    </select>
+
+    <!-- Recent orders -->
+    <select id="findRecentOrdersByUserId" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findRecentOrdersByStoreId" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        WHERE store_id = #{storeId}
+        ORDER BY created_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="findRecentOrders" resultMap="OrderResultMap">
+        SELECT * FROM orders 
+        ORDER BY created_at DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- Order number generation -->
+    <select id="generateOrderNumber" resultType="string">
+        SELECT CONCAT('ORD-', DATE_FORMAT(NOW(), '%Y%m%d'), '-', LPAD(FLOOR(RAND() * 10000), 4, '0'))
+    </select>
+
+    <select id="existsByOrderNumber" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM orders WHERE order_number = #{orderNumber})
+    </select>
+
+    <!-- Check existence -->
+    <select id="existsOrderById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM orders WHERE id = #{id})
+    </select>
+
+</mapper>

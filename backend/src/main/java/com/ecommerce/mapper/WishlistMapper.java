@@ -8,27 +8,27 @@ import java.util.List;
 @Mapper
 public interface WishlistMapper {
 
-    @Insert("INSERT INTO wishlists (user_id, product_id, notes, priority, created_at) " +
+    @Insert("INSERT INTO wishlist (user_id, product_id, notes, priority, created_at) " +
             "VALUES (#{userId}, #{productId}, #{notes}, #{priority}, NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(Wishlist wishlist);
 
-    @Delete("DELETE FROM wishlists WHERE user_id = #{userId} AND product_id = #{productId}")
+    @Delete("DELETE FROM wishlist WHERE user_id = #{userId} AND product_id = #{productId}")
     void deleteByUserAndProduct(@Param("userId") Long userId, @Param("productId") Long productId);
 
-    @Select("SELECT EXISTS(SELECT 1 FROM wishlists WHERE user_id = #{userId} AND product_id = #{productId})")
+    @Select("SELECT EXISTS(SELECT 1 FROM wishlist WHERE user_id = #{userId} AND product_id = #{productId})")
     boolean existsByUserAndProduct(@Param("userId") Long userId, @Param("productId") Long productId);
 
-    @Select("SELECT COUNT(*) FROM wishlists WHERE user_id = #{userId}")
+    @Select("SELECT COUNT(*) FROM wishlist WHERE user_id = #{userId}")
     long countByUser(@Param("userId") Long userId);
 
-    @Select("SELECT product_id FROM wishlists WHERE user_id = #{userId}")
+    @Select("SELECT product_id FROM wishlist WHERE user_id = #{userId}")
     List<Long> findProductIdsByUser(@Param("userId") Long userId);
 
-    @Select("SELECT COUNT(*) FROM wishlists WHERE product_id = #{productId}")
+    @Select("SELECT COUNT(*) FROM wishlist WHERE product_id = #{productId}")
     long countByProduct(@Param("productId") Long productId);
 
-    @Update("UPDATE wishlists SET notes = #{notes}, priority = #{priority} " +
+    @Update("UPDATE wishlist SET notes = #{notes}, priority = #{priority} " +
             "WHERE user_id = #{userId} AND product_id = #{productId}")
     void updateByUserAndProduct(@Param("userId") Long userId, @Param("productId") Long productId,
                                @Param("notes") String notes, @Param("priority") Integer priority);
@@ -36,7 +36,7 @@ public interface WishlistMapper {
     @Select("SELECT w.*, u.first_name as user_first_name, u.last_name as user_last_name, " +
             "p.name as product_name, p.description as product_description, p.price as product_price, " +
             "pi.image_url as product_image, s.store_name as seller_name " +
-            "FROM wishlists w " +
+            "FROM wishlist w " +
             "JOIN users u ON w.user_id = u.id " +
             "JOIN products p ON w.product_id = p.id " +
             "JOIN stores s ON p.seller_id = s.id " +
@@ -46,9 +46,9 @@ public interface WishlistMapper {
             "LIMIT #{limit} OFFSET #{offset}")
     List<Wishlist> findByUserWithProducts(@Param("userId") Long userId, @Param("limit") int limit, @Param("offset") int offset);
 
-    @Select("SELECT COUNT(*) FROM wishlists WHERE user_id = #{userId}")
+    @Select("SELECT COUNT(*) FROM wishlist WHERE user_id = #{userId}")
     long countByUserForPagination(@Param("userId") Long userId);
 
-    @Select("SELECT * FROM wishlists WHERE user_id = #{userId} AND product_id = #{productId}")
+    @Select("SELECT * FROM wishlist WHERE user_id = #{userId} AND product_id = #{productId}")
     Wishlist findByUserAndProduct(@Param("userId") Long userId, @Param("productId") Long productId);
 }

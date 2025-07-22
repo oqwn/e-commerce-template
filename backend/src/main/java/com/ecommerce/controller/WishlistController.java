@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wishlist")
+@RequestMapping("/wishlist")
 @RequiredArgsConstructor
 @Tag(name = "Wishlist", description = "Wishlist management APIs")
 @SecurityRequirement(name = "bearerAuth")
