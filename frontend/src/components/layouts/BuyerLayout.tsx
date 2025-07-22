@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/useAuth';
 import { useCart } from '@/contexts/useCart';
+import { useWishlist } from '@/hooks/useWishlist';
 import {
   ShoppingBagIcon,
   HeartIcon,
@@ -15,6 +16,7 @@ import {
 const BuyerLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const { cartItemCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -70,6 +72,19 @@ const BuyerLayout: React.FC = () => {
 
             {/* User Menu */}
             <div className="flex items-center space-x-4">
+              <Link
+                to="/buyer/wishlist"
+                className="p-2 text-gray-400 hover:text-gray-500 relative"
+                data-wishlist-icon
+              >
+                <HeartIcon className="h-6 w-6" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
+                )}
+              </Link>
+
               <Link
                 to="/buyer/cart"
                 className="p-2 text-gray-400 hover:text-gray-500 relative"

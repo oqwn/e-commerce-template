@@ -4,7 +4,7 @@
 
 This TODO list is organized by development phases, prioritizing MVP features first, then progressive enhancement based on the user stories. Each item includes priority levels and estimated effort.
 
-**Last Updated**: 2025-07-21
+**Last Updated**: 2025-07-22
 
 **Current Status**: The project has been converted from a trading engine to a clean e-commerce template. We have inherited a solid infrastructure foundation:
 
@@ -117,18 +117,18 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 
 ### Advanced Product Features
 - [ ] ⭐ **M** Add product comparison functionality
-- [ ] ⭐ **M** Implement wishlist/favorites system
+- [x] ⭐ **M** Implement wishlist/favorites system (✅ Full implementation with MyBatis integration)
 - [ ] ⭐ **M** Create product recommendation engine (basic)
 - [ ] 📈 **M** Add product Q&A system
-- [x] 📈 **L** Implement advanced search with filters
+- [x] 📈 **L** Implement advanced search with filters (✅ Complete with category, price range, sort options)
 - [ ] 📈 **M** Add recently viewed products
 
 ### Admin Panel Foundation
-- [x] ⭐ **L** Create admin dashboard layout
+- [x] ⭐ **L** Create admin dashboard layout (✅ Complete with metrics, activities, system health)
 - [ ] ⭐ **M** Build user management interface
-- [ ] ⭐ **M** Implement product moderation tools
+- [x] ⭐ **M** Implement product moderation tools (✅ Review moderation implemented)
 - [ ] ⭐ **M** Create order oversight functionality
-- [ ] 📈 **M** Add basic analytics and reporting
+- [x] 📈 **M** Add basic analytics and reporting (✅ Dashboard analytics implemented)
 - [ ] 📈 **M** Implement content management system
 
 ---
@@ -136,7 +136,7 @@ This TODO list is organized by development phases, prioritizing MVP features fir
 ## Phase 3: Enhanced Features (Weeks 17-24)
 
 ### Marketing & Promotions
-- [ ] ⭐ **M** Create coupon management system
+- [x] ⭐ **M** Create coupon management system (✅ Complete with validation, usage tracking)
 - [ ] ⭐ **M** Implement flash sales functionality
 - [ ] ⭐ **M** Add bulk discount rules
 - [ ] 📈 **L** Build campaign management tools

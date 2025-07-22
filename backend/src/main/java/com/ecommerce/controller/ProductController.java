@@ -158,6 +158,15 @@ public class ProductController {
     
     @PostMapping("/{productId}/images")
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
+    @Operation(summary = "Upload product image", description = "Upload an image for a product (Seller/Admin only)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Image uploaded successfully",
+            content = @Content(schema = @Schema(implementation = ProductImageDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid file or parameters",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Server error during upload",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class)))
+    })
     public ResponseEntity<com.ecommerce.dto.ApiResponse> uploadProductImage(
             @PathVariable Long productId,
             @RequestParam("file") MultipartFile file,

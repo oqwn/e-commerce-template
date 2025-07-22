@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .requestMatchers("/health", "/actuator/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/files/**").permitAll()
                 
                 // Public product browsing (will be added later)
                 .requestMatchers(HttpMethod.GET, "/products/**", "/categories/**").permitAll()

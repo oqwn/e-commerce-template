@@ -6,6 +6,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner'
 import AnimatedAddToCartButton from '@/components/ui/AnimatedAddToCartButton'
 import { toast } from 'react-toastify'
 import { useAuth } from '@/contexts/useAuth'
+import { useWishlist } from '@/hooks/useWishlist'
 
 interface ProductImage {
   id: number
@@ -59,6 +60,7 @@ export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
+  const { isInWishlist, toggleWishlist, isTogglingWishlist } = useWishlist()
   const [product, setProduct] = useState<Product | null>(null)
   const [reviews, setReviews] = useState<ProductReview[]>([])
   const [loading, setLoading] = useState(true)
@@ -306,8 +308,20 @@ export default function ProductDetail() {
                 className="flex-1"
                 size="lg"
               />
-              <button className="p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                <Heart className="w-5 h-5 text-gray-600" />
+              <button 
+                onClick={() => product && toggleWishlist(product.id)}
+                disabled={isTogglingWishlist}
+                className={`p-3 border rounded-md transition-colors ${
+                  product && isInWishlist(product.id)
+                    ? 'border-red-500 bg-red-50 hover:bg-red-100'
+                    : 'border-gray-300 hover:bg-gray-50'
+                } disabled:opacity-50`}
+              >
+                <Heart 
+                  className={`w-5 h-5 ${
+                    product && isInWishlist(product.id) ? 'text-red-500 fill-current' : 'text-gray-600'
+                  }`} 
+                />
               </button>
               <button className="p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                 <Share2 className="w-5 h-5 text-gray-600" />

@@ -5,11 +5,12 @@ import {
   HeartIcon,
   StarIcon
 } from '@heroicons/react/24/outline';
-import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { StarIcon as StarIconSolid, HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import { Product, Category } from '@/types';
 import { api } from '@/services/api';
 // import { useCart } from '@/contexts/useCart'; // Will be used when cart functionality is implemented
 import AnimatedAddToCartButton from '@/components/ui/AnimatedAddToCartButton';
+import { useWishlist } from '@/hooks/useWishlist';
 
 const ProductListing: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,6 +25,7 @@ const ProductListing: React.FC = () => {
     max: searchParams.get('max_price') || ''
   });
   // const { addToCart } = useCart(); // Will be used when cart functionality is implemented
+  const { isInWishlist, toggleWishlist, isTogglingWishlist } = useWishlist();
 
   useEffect(() => {
     fetchProducts();
@@ -222,8 +224,19 @@ const ProductListing: React.FC = () => {
                 )}
                 
                 {/* Wishlist Button */}
-                <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors">
-                  <HeartIcon className="h-5 w-5 text-gray-600" />
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    toggleWishlist(product.id);
+                  }}
+                  disabled={isTogglingWishlist}
+                  className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  {isInWishlist(product.id) ? (
+                    <HeartIconSolid className="h-5 w-5 text-red-500" />
+                  ) : (
+                    <HeartIcon className="h-5 w-5 text-gray-600" />
+                  )}
                 </button>
 
                 {/* Discount Badge */}
