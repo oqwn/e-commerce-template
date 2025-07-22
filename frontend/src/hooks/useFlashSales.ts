@@ -8,7 +8,7 @@ export const useActiveFlashSales = () => {
     queryKey: ['flash-sales', 'active'],
     queryFn: async () => {
       const response = await flashSalesApi.getActiveFlashSales();
-      return response.data.data || [];
+      return response.data || [];
     },
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 60 * 1000, // Refetch every minute
@@ -20,7 +20,7 @@ export const useUpcomingFlashSales = () => {
     queryKey: ['flash-sales', 'upcoming'],
     queryFn: async () => {
       const response = await flashSalesApi.getUpcomingFlashSales();
-      return response.data.data || [];
+      return response.data || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -31,7 +31,7 @@ export const useActiveFlashSaleProducts = () => {
     queryKey: ['flash-sale-products', 'active'],
     queryFn: async () => {
       const response = await flashSalesApi.getActiveFlashSaleProducts();
-      return response.data.data;
+      return response.data;
     },
     staleTime: 30 * 1000, // 30 seconds
     refetchInterval: 60 * 1000, // Refetch every minute
@@ -44,7 +44,7 @@ export const useFlashSaleByProduct = (productId: number | null) => {
     queryFn: async () => {
       if (!productId) return null;
       const response = await flashSalesApi.getFlashSaleByProduct(productId);
-      return response.data.data;
+      return response.data;
     },
     enabled: !!productId,
     staleTime: 30 * 1000, // 30 seconds
@@ -57,7 +57,7 @@ export const useMyFlashSales = () => {
     queryKey: ['flash-sales', 'my'],
     queryFn: async () => {
       const response = await flashSalesApi.getMyFlashSales();
-      return response.data.data;
+      return response.data;
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -69,7 +69,7 @@ export const useFlashSaleById = (id: number | null) => {
     queryFn: async () => {
       if (!id) return null;
       const response = await flashSalesApi.getFlashSale(id);
-      return response.data.data;
+      return response.data;
     },
     enabled: !!id,
     staleTime: 60 * 1000, // 1 minute

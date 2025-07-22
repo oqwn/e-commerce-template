@@ -4,11 +4,13 @@ import com.ecommerce.dto.AddToCartRequest;
 import com.ecommerce.dto.CartResponse;
 import com.ecommerce.dto.CartItemResponse;
 import com.ecommerce.dto.UpdateCartItemRequest;
+import com.ecommerce.dto.response.FlashSaleProductResponse;
 import com.ecommerce.mapper.CartMapper;
 import com.ecommerce.mapper.ProductMapper;
 import com.ecommerce.model.Cart;
 import com.ecommerce.model.CartItem;
 import com.ecommerce.model.Product;
+import com.ecommerce.service.FlashSaleService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,13 @@ public class CartService {
     
     private final CartMapper cartMapper;
     private final ProductMapper productMapper;
+    private final FlashSaleService flashSaleService;
     private final ObjectMapper objectMapper;
     
-    public CartService(CartMapper cartMapper, ProductMapper productMapper, ObjectMapper objectMapper) {
+    public CartService(CartMapper cartMapper, ProductMapper productMapper, FlashSaleService flashSaleService, ObjectMapper objectMapper) {
         this.cartMapper = cartMapper;
         this.productMapper = productMapper;
+        this.flashSaleService = flashSaleService;
         this.objectMapper = objectMapper;
     }
     
@@ -99,14 +103,17 @@ public class CartService {
             }
             
             item.setQuantity(newQuantity);
+            // Update price to current effective price (handles flash sale price changes)
+            item.setPriceAtTime(getEffectivePrice(product));
             cartMapper.updateCartItem(item);
         } else {
             // Create new cart item
+            BigDecimal effectivePrice = getEffectivePrice(product);
             CartItem cartItem = new CartItem(
                 cart.getId(),
                 request.getProductId(),
                 request.getQuantity(),
-                product.getPrice(),
+                effectivePrice,
                 request.getSelectedVariants()
             );
             cartMapper.insertCartItem(cartItem);
@@ -296,5 +303,25 @@ public class CartService {
     
     public String generateGuestSessionId() {
         return "guest_" + UUID.randomUUID().toString();
+    }
+    
+    /**
+     * Get the effective price for a product, considering flash sales
+     */
+    private BigDecimal getEffectivePrice(Product product) {
+        try {
+            // Check if product has an active flash sale
+            FlashSaleProductResponse flashSale = flashSaleService.getActiveFlashSaleByProductId(product.getId());
+            if (flashSale != null && flashSale.getSalePrice() != null) {
+                return flashSale.getSalePrice();
+            }
+        } catch (Exception e) {
+            // Log the error but continue with regular price
+            // In production, you might want to use a proper logger
+            System.err.println("Error checking flash sale for product " + product.getId() + ": " + e.getMessage());
+        }
+        
+        // Return regular price if no flash sale or error occurred
+        return product.getPrice();
     }
 }

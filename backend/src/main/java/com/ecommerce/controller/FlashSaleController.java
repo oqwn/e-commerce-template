@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/flash-sales")
+@RequestMapping("/flash-sales")
 @RequiredArgsConstructor
 @Tag(name = "Flash Sales", description = "Flash sales management APIs")
 @SecurityRequirement(name = "bearerAuth")

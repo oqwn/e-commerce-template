@@ -81,7 +81,7 @@ public interface FlashSaleMapper {
             "pi.image_url as product_image, s.store_name as seller_name " +
             "FROM flash_sale_products fsp " +
             "JOIN products p ON fsp.product_id = p.id " +
-            "JOIN stores s ON p.seller_id = s.id " +
+            "JOIN stores s ON p.seller_id = s.seller_id " +
             "LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = true " +
             "WHERE fsp.flash_sale_id = #{flashSaleId}")
     List<FlashSaleProduct> findProductsByFlashSaleId(@Param("flashSaleId") Long flashSaleId);
@@ -95,12 +95,15 @@ public interface FlashSaleMapper {
             "LIMIT 1")
     FlashSaleProduct findActiveFlashSaleByProductId(@Param("productId") Long productId);
 
-    @Select("SELECT DISTINCT p.id, p.name, p.slug, p.price, pi.image_url as image_url, " +
-            "fsp.sale_price, fsp.original_price, fs.end_time, s.store_name as seller_name " +
+    @Select("SELECT DISTINCT fsp.id, fsp.flash_sale_id, fsp.product_id, fsp.original_price, fsp.sale_price, " +
+            "fsp.max_quantity_per_product, fsp.used_quantity_per_product, fsp.created_at, " +
+            "p.name as productName, p.slug as productSlug, pi.image_url as productImage, " +
+            "s.store_name as sellerName, fs.name as flashSaleName, fs.start_time as flashSaleStartTime, " +
+            "fs.end_time as flashSaleEndTime " +
             "FROM flash_sale_products fsp " +
             "JOIN flash_sales fs ON fsp.flash_sale_id = fs.id " +
             "JOIN products p ON fsp.product_id = p.id " +
-            "JOIN stores s ON p.seller_id = s.id " +
+            "JOIN stores s ON p.seller_id = s.seller_id " +
             "LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = true " +
             "WHERE fs.is_active = true AND fs.start_time <= NOW() AND fs.end_time > NOW() " +
             "AND (fsp.max_quantity_per_product IS NULL OR fsp.used_quantity_per_product < fsp.max_quantity_per_product) " +

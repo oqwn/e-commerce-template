@@ -28,6 +28,9 @@ public class FlashSaleProduct {
     private String productSlug;
     private String productImage;
     private String sellerName;
+    private String flashSaleName;
+    private LocalDateTime flashSaleStartTime;
+    private LocalDateTime flashSaleEndTime;
     
     // Computed properties
     public boolean hasQuantityAvailable() {

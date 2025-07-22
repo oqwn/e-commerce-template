@@ -74,53 +74,53 @@ export interface FlashSaleProduct {
 export const flashSalesApi = {
   // Create flash sale
   createFlashSale: (data: CreateFlashSaleRequest) =>
-    api.post('/api/flash-sales', data),
+    api.post('/flash-sales', data),
 
   // Update flash sale
   updateFlashSale: (id: number, data: UpdateFlashSaleRequest) =>
-    api.put(`/api/flash-sales/${id}`, data),
+    api.put(`/flash-sales/${id}`, data),
 
   // Delete flash sale
   deleteFlashSale: (id: number) =>
-    api.delete(`/api/flash-sales/${id}`),
+    api.delete(`/flash-sales/${id}`),
 
   // Get flash sale by ID
   getFlashSale: (id: number) =>
-    api.get(`/api/flash-sales/${id}`),
+    api.get(`/flash-sales/${id}`),
 
   // Get active flash sales
   getActiveFlashSales: () =>
-    api.get('/api/flash-sales/active'),
+    api.get('/flash-sales/active'),
 
   // Get upcoming flash sales
   getUpcomingFlashSales: () =>
-    api.get('/api/flash-sales/upcoming'),
+    api.get('/flash-sales/upcoming'),
 
   // Get user's flash sales
   getMyFlashSales: () =>
-    api.get('/api/flash-sales/my-flash-sales'),
+    api.get('/flash-sales/my-flash-sales'),
 
   // Get all flash sales (admin)
   getAllFlashSales: () =>
-    api.get('/api/flash-sales'),
+    api.get('/flash-sales'),
 
   // Get active flash sale products
   getActiveFlashSaleProducts: () =>
-    api.get('/api/flash-sales/products'),
+    api.get('/flash-sales/products'),
 
   // Get flash sale by product ID
   getFlashSaleByProduct: (productId: number) =>
-    api.get(`/api/flash-sales/products/${productId}`),
+    api.get(`/flash-sales/products/${productId}`),
 
   // Activate flash sale
   activateFlashSale: (id: number) =>
-    api.put(`/api/flash-sales/${id}/activate`, {}),
+    api.put(`/flash-sales/${id}/activate`, {}),
 
   // Deactivate flash sale
   deactivateFlashSale: (id: number) =>
-    api.put(`/api/flash-sales/${id}/deactivate`, {}),
+    api.put(`/flash-sales/${id}/deactivate`, {}),
 
   // Record purchase (internal use)
   recordFlashSalePurchase: (productId: number) =>
-    api.post(`/api/flash-sales/products/${productId}/purchase`, {}),
+    api.post(`/flash-sales/products/${productId}/purchase`, {}),
 };

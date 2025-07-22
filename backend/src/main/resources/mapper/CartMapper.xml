@@ -113,9 +113,13 @@
         FROM carts c
         LEFT JOIN cart_items ci ON c.id = ci.cart_id
         LEFT JOIN products p ON ci.product_id = p.id
-        WHERE c.user_id = #{userId}
-        ORDER BY c.updated_at DESC, ci.created_at ASC
-        LIMIT 1
+        WHERE c.id = (
+            SELECT id FROM carts 
+            WHERE user_id = #{userId} 
+            ORDER BY updated_at DESC 
+            LIMIT 1
+        )
+        ORDER BY ci.created_at ASC
     </select>
 
     <select id="findCartBySessionIdWithItems" resultMap="CartWithItemsResultMap">
@@ -126,9 +130,13 @@
         FROM carts c
         LEFT JOIN cart_items ci ON c.id = ci.cart_id
         LEFT JOIN products p ON ci.product_id = p.id
-        WHERE c.session_id = #{sessionId}
-        ORDER BY c.updated_at DESC, ci.created_at ASC
-        LIMIT 1
+        WHERE c.id = (
+            SELECT id FROM carts 
+            WHERE session_id = #{sessionId} 
+            ORDER BY updated_at DESC 
+            LIMIT 1
+        )
+        ORDER BY ci.created_at ASC
     </select>
 
     <!-- Cart Item CRUD Operations -->
