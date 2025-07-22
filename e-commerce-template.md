@@ -51,9 +51,16 @@ This document provides a complete set of user stories for an open‑source e‑c
 - **Order History** - Buyer order tracking with status visualization
 - **API Documentation** - SpringDoc OpenAPI 3.0 with Swagger UI at `/api/swagger-ui.html`
 
+### ✅ Recently Completed (Today)
+- **Product Reviews System** - Full implementation with create, read, update, delete functionality
+  - Backend endpoints with approval workflow
+  - Frontend UI with star ratings and review forms
+  - Integration with product detail pages
+  - Admin moderation capabilities
+
 ### 🚧 In Progress
 - **OAuth 2.0 Integration** - Google, Facebook login (UI components ready, backend pending)
-- **Product Reviews API** - Schema exists, endpoints need implementation
+- **Product Image Upload** - File upload functionality (URLs work, file upload pending)
 
 ### 📋 Next Sprint Priorities
 1. Product catalog and management

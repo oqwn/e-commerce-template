@@ -5,6 +5,7 @@ import com.ecommerce.dto.ProductImageDto;
 import com.ecommerce.model.Product;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.FileUploadService;
+import com.ecommerce.service.ProductReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.util.List;
+import java.util.Map;
 import java.io.IOException;
 
 @Slf4j
@@ -38,6 +40,7 @@ public class ProductController {
     
     private final ProductService productService;
     private final FileUploadService fileUploadService;
+    private final ProductReviewService productReviewService;
     
     @PostMapping
     @PreAuthorize("hasAnyRole('SELLER', 'ADMIN')")
@@ -204,5 +207,47 @@ public class ProductController {
         
         ProductImageDto imageDto = productService.updateProductImage(productId, imageId, altText, displayOrder);
         return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success("Image updated successfully", imageDto));
+    }
+    
+    // Product Review Endpoints
+    @GetMapping("/{productId}/reviews")
+    @Operation(summary = "Get product reviews", description = "Get all approved reviews for a specific product")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reviews retrieved successfully",
+            content = @Content(schema = @Schema(implementation = ProductReviewDto.class)))
+    })
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getProductReviews(@PathVariable Long productId) {
+        List<ProductReviewDto> reviews = productReviewService.getProductReviews(productId);
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(reviews));
+    }
+    
+    @PostMapping("/{productId}/reviews")
+    @PreAuthorize("hasAnyRole('BUYER', 'SELLER', 'ADMIN')")
+    @Operation(summary = "Create product review", description = "Create a new review for a product (authenticated users only)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Review created successfully",
+            content = @Content(schema = @Schema(implementation = ProductReviewDto.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input or already reviewed",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Access denied",
+            content = @Content(schema = @Schema(implementation = com.ecommerce.dto.ApiResponse.class)))
+    })
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> createProductReview(
+            @PathVariable Long productId,
+            @Valid @RequestBody CreateReviewRequest request) {
+        request.setProductId(productId); // Ensure the product ID matches the path
+        ProductReviewDto review = productReviewService.createReview(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(com.ecommerce.dto.ApiResponse.success("Review created successfully", review));
+    }
+    
+    @GetMapping("/{productId}/reviews/stats")
+    @Operation(summary = "Get product rating statistics", description = "Get average rating and total review count for a product")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
+    })
+    public ResponseEntity<com.ecommerce.dto.ApiResponse> getProductRatingStats(@PathVariable Long productId) {
+        Map<String, Object> stats = productReviewService.getProductRatingStats(productId);
+        return ResponseEntity.ok(com.ecommerce.dto.ApiResponse.success(stats));
     }
 }
