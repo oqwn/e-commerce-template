@@ -26,10 +26,15 @@ const api = {
   },
 
   get: async (endpoint: string) => {
+    const headers = api.getHeaders();
+    console.log(`GET ${endpoint} - Headers:`, headers);
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: api.getHeaders(),
+      headers,
       credentials: 'include',
     });
+    
+    console.log(`GET ${endpoint} - Response status:`, response.status);
     
     if (response.status === 401) {
       throw new Error('Unauthorized');
@@ -38,6 +43,8 @@ const api = {
     // Handle empty response body
     const text = await response.text();
     const data = text ? JSON.parse(text) : {};
+    
+    console.log(`GET ${endpoint} - Response data:`, data);
     
     if (!response.ok) {
       throw { response: { data, status: response.status } };
